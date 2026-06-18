@@ -1,2654 +1,545 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FIFA World Cup 2026 — USA · Canada · Mexico</title>
-<meta name="description" content="FIFA World Cup 2026 — Official-style fan showcase. USA, Canada & Mexico host 48 nations across 104 matches. Explore venues, groups, players, and more.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-/* ============================================================
-   CSS CUSTOM PROPERTIES
-   ============================================================ */
-:root {
-  --fifa-navy:       #0a1628;
-  --fifa-blue:       #1a3a6e;
-  --fifa-gold:       #c9a227;
-  --fifa-gold-light: #f5d675;
-  --fifa-red:        #c1272d;
-  --fifa-white:      #f5f5f0;
-  --fifa-silver:     #b0b8c8;
-  --glow-gold: 0 0 40px rgba(201,162,39,0.4);
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIFA World Cup 2026</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-/* ============================================================
-   RESET & BASE
-   ============================================================ */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; font-size: 16px; }
-body {
-  font-family: 'Inter', sans-serif;
-  background: var(--fifa-navy);
-  color: var(--fifa-white);
-  overflow-x: hidden;
-  padding-top: 102px;
-}
-img, svg { display: block; }
-a { text-decoration: none; color: inherit; }
-button { cursor: pointer; font-family: inherit; border: none; background: none; }
-ul { list-style: none; }
-em { font-style: normal; color: var(--fifa-gold); }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0a0a2e 0%, #1a1a4e 30%, #0d2137 60%, #0a1628 100%);
+            min-height: 100vh;
+            color: #ffffff;
+            overflow-x: hidden;
+            position: relative;
+        }
 
-/* Focus visible */
-:focus-visible { outline: 2px solid var(--fifa-gold); outline-offset: 3px; }
+        /* ── Background Soccer Balls ── */
+        .bg-balls-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
 
-/* ============================================================
-   LOGO SIZE CLASSES
-   ============================================================ */
-.logo-nav    { height: 36px; width: auto; }
-.logo-hero   { width: 220px; height: auto; }
-.logo-footer { width: 80px; height: auto; }
-.logo-stamp  { width: 60px; height: auto; }
-.logo-section{ height: 44px; width: auto; }
-.logo-ticker { height: 24px; width: auto; }
+        .soccer-ball {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #ffffff, #cccccc 40%, #888888 70%, #444444);
+            box-shadow:
+                inset -4px -4px 8px rgba(0,0,0,0.5),
+                inset 2px 2px 6px rgba(255,255,255,0.3);
+        }
 
-/* ============================================================
-   SECTION BRAND ROW
-   ============================================================ */
-.section-brand-row {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-bottom: 8px;
-}
-.section-brand-divider {
-  width: 1px;
-  height: 44px;
-  background: var(--fifa-gold);
-  opacity: 0.5;
-  flex-shrink: 0;
-}
-.section-brand-text { display: flex; flex-direction: column; }
-.section-label {
-  font-family: 'Inter', sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  color: var(--fifa-gold);
-  text-transform: uppercase;
-  margin-bottom: 2px;
-}
-.section-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(28px, 4vw, 44px);
-  line-height: 1;
-  color: var(--fifa-white);
-}
+        /* Pentagon patch overlay using pseudo-element pattern */
+        .soccer-ball::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background:
+                radial-gradient(circle at 50% 20%, #222 8%, transparent 9%),
+                radial-gradient(circle at 80% 38%, #222 8%, transparent 9%),
+                radial-gradient(circle at 68% 72%, #222 8%, transparent 9%),
+                radial-gradient(circle at 32% 72%, #222 8%, transparent 9%),
+                radial-gradient(circle at 20% 38%, #222 8%, transparent 9%),
+                radial-gradient(circle at 50% 50%, #333 14%, transparent 15%);
+        }
 
-/* ============================================================
-   CANVAS
-   ============================================================ */
-#ball-canvas {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  z-index: 1;
-  pointer-events: none;
-  opacity: 0.16;
-}
+        /* ── Keyframe Animations ── */
+        @keyframes floatBall {
+            0%   { transform: translateY(0px)   rotate(0deg); }
+            33%  { transform: translateY(-18px) rotate(60deg); }
+            66%  { transform: translateY(8px)   rotate(120deg); }
+            100% { transform: translateY(0px)   rotate(180deg); }
+        }
 
-/* ============================================================
-   NAVIGATION
-   ============================================================ */
-nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 100;
-  height: 64px;
-  padding: 0 40px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: rgba(10,22,40,0.93);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid rgba(201,162,39,0.18);
-  transition: border-color 0.3s, box-shadow 0.3s;
-}
-nav.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,0.6); }
-.nav-logo { flex-shrink: 0; display: flex; align-items: center; }
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 32px;
-}
-.nav-links a {
-  font-family: 'Inter', sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.6px;
-  text-transform: uppercase;
-  color: var(--fifa-silver);
-  padding-bottom: 4px;
-  border-bottom: 2px solid transparent;
-  transition: color 0.2s, border-color 0.2s;
-}
-.nav-links a:hover,
-.nav-links a.active {
-  color: var(--fifa-gold);
-  border-bottom-color: var(--fifa-gold);
-}
-.btn-tickets {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: var(--fifa-gold);
-  color: var(--fifa-navy);
-  padding: 8px 20px;
-  border-radius: 3px;
-  font-family: 'Inter', sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  transition: opacity 0.2s;
-}
-.btn-tickets:hover { opacity: 0.88; }
-.btn-tickets .ext-icon { font-size: 12px; }
-.hamburger {
-  display: none;
-  flex-direction: column;
-  gap: 5px;
-  cursor: pointer;
-  padding: 4px;
-  background: none;
-  border: none;
-}
-.hamburger span {
-  display: block;
-  width: 24px;
-  height: 2px;
-  background: var(--fifa-white);
-  border-radius: 2px;
-  transition: all 0.3s;
-}
-.mobile-menu {
-  display: none;
-  position: fixed;
-  top: 64px; left: 0; right: 0;
-  z-index: 99;
-  background: var(--fifa-navy);
-  border-bottom: 1px solid rgba(201,162,39,0.2);
-  padding: 20px 24px;
-  flex-direction: column;
-  gap: 16px;
-}
-.mobile-menu.open { display: flex; }
-.mobile-menu a {
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.6px;
-  text-transform: uppercase;
-  color: var(--fifa-silver);
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-  transition: color 0.2s;
-}
-.mobile-menu a:hover { color: var(--fifa-gold); }
+        @keyframes driftBall {
+            0%   { transform: translate(0px, 0px)    rotate(0deg); }
+            25%  { transform: translate(12px, -14px) rotate(45deg); }
+            50%  { transform: translate(20px, 6px)   rotate(90deg); }
+            75%  { transform: translate(6px, 18px)   rotate(135deg); }
+            100% { transform: translate(0px, 0px)    rotate(180deg); }
+        }
 
-/* ============================================================
-   LIVE SCORES BANNER
-   ============================================================ */
-.scores-banner {
-  position: fixed;
-  top: 64px; left: 0; right: 0;
-  z-index: 99;
-  height: 38px;
-  overflow: hidden;
-  background: var(--fifa-red);
-  border-bottom: 2px solid rgba(255,255,255,0.12);
-  display: flex;
-  align-items: center;
-}
-.banner-anchor {
-  flex-shrink: 0;
-  width: 130px;
-  height: 38px;
-  background: rgba(0,0,0,0.35);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 12px;
-  border-right: 1px solid rgba(255,255,255,0.18);
-}
-.banner-live-text {
-  font-family: 'Inter', sans-serif;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: #fff;
-}
-.pulse-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #ff4444;
-  flex-shrink: 0;
-}
-.banner-ticker-wrap {
-  flex: 1;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-}
-#ticker-item {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  height: 38px;
-  transition: opacity 0.4s ease;
-}
-.ticker-team {
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.ticker-score {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 20px;
-  color: #fff;
-  background: rgba(0,0,0,0.28);
-  padding: 2px 12px;
-  border-radius: 3px;
-}
-.ticker-status {
-  font-family: 'Inter', sans-serif;
-  font-size: 9px;
-  font-weight: 700;
-  padding: 3px 6px;
-  border-radius: 3px;
-}
-.ticker-status.live {
-  background: #fff;
-  color: var(--fifa-red);
-}
-.ticker-status.ft {
-  background: rgba(255,255,255,0.15);
-  color: #fff;
-}
-.banner-dots {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  position: absolute;
-  right: 16px;
-}
-.banner-dot {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.3);
-  transition: background 0.3s;
-}
-.banner-dot.active { background: rgba(255,255,255,1); }
+        @keyframes spinFloat {
+            0%   { transform: translateY(0px)   rotate(0deg); }
+            50%  { transform: translateY(-24px) rotate(180deg); }
+            100% { transform: translateY(0px)   rotate(360deg); }
+        }
 
-/* ============================================================
-   HERO
-   ============================================================ */
-.hero {
-  min-height: 100vh;
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 40px 20px 60px;
-  overflow: hidden;
-}
-.hero-bg {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background:
-    linear-gradient(to bottom, transparent 75%, var(--fifa-navy) 100%),
-    radial-gradient(ellipse 75% 55% at 50% 62%, rgba(26,58,110,0.5) 0%, transparent 100%),
-    var(--fifa-navy);
-}
-.hero-pitch {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  opacity: 0.04;
-  pointer-events: none;
-}
-.hero-content {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(193,39,45,0.12);
-  border: 1px solid rgba(193,39,45,0.35);
-  border-radius: 30px;
-  padding: 8px 16px;
-  margin-bottom: 28px;
-}
-.hero-badge-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #ff6b6b;
-}
-.hero-badge-text {
-  font-family: 'Inter', sans-serif;
-  font-size: 11px;
-  font-weight: 600;
-  color: #ff6b6b;
-  letter-spacing: 0.5px;
-}
-.hero-logo-wrap {
-  margin-bottom: 24px;
-  filter: drop-shadow(var(--glow-gold));
-}
-.hero-headline {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(72px, 14vw, 190px);
-  line-height: 0.86;
-  letter-spacing: -1px;
-  background: linear-gradient(135deg, #ffffff 0%, #c9a227 55%, #ffffff 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 4px;
-}
-.hero-subhead {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(18px, 3.5vw, 48px);
-  color: var(--fifa-silver);
-  letter-spacing: 5px;
-  margin-bottom: 28px;
-}
-.hero-flags {
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--fifa-white);
-  margin-bottom: 44px;
-  letter-spacing: 0.5px;
-}
-.countdown {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-bottom: 48px;
-}
-.cd-block {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(201,162,39,0.2);
-  border-radius: 6px;
-  padding: 16px 22px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 80px;
-}
-.cd-num {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 54px;
-  color: var(--fifa-gold);
-  line-height: 1;
-}
-.cd-label {
-  font-family: 'Inter', sans-serif;
-  font-size: 10px;
-  color: var(--fifa-silver);
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  margin-top: 4px;
-}
-.hero-ctas {
-  display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-.btn-primary {
-  background: var(--fifa-gold);
-  color: var(--fifa-navy);
-  padding: 13px 34px;
-  border-radius: 3px;
-  font-family: 'Inter', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  border: none;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--glow-gold);
-}
-.btn-secondary {
-  background: transparent;
-  color: var(--fifa-white);
-  padding: 13px 34px;
-  border-radius: 3px;
-  font-family: 'Inter', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  border: 1px solid rgba(255,255,255,0.3);
-  cursor: pointer;
-  transition: border-color 0.2s, color 0.2s;
-}
-.btn-secondary:hover {
-  border-color: var(--fifa-gold);
-  color: var(--fifa-gold);
-}
-.scroll-indicator {
-  position: absolute;
-  bottom: 28px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  z-index: 2;
-}
-.scroll-text {
-  font-family: 'Inter', sans-serif;
-  font-size: 10px;
-  color: var(--fifa-silver);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-}
-.scroll-line {
-  width: 1px;
-  height: 28px;
-  background: var(--fifa-gold);
-  opacity: 0.5;
-}
+        @keyframes gentleDrift {
+            0%   { transform: translate(0px,  0px)  rotate(0deg); }
+            50%  { transform: translate(-15px, 20px) rotate(90deg); }
+            100% { transform: translate(0px,  0px)  rotate(180deg); }
+        }
 
-/* ============================================================
-   STATS STRIP
-   ============================================================ */
-.stats-strip {
-  background: var(--fifa-blue);
-  border-top: 3px solid var(--fifa-gold);
-  border-bottom: 3px solid var(--fifa-gold);
-  padding: 20px 0 10px;
-  position: relative;
-  z-index: 2;
-}
-.stats-logo-wrap {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-}
-.stat-item {
-  padding: 30px 16px;
-  text-align: center;
-  border-right: 1px solid rgba(255,255,255,0.07);
-}
-.stat-item:last-child { border-right: none; }
-.stat-num {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 56px;
-  color: var(--fifa-gold);
-  line-height: 1;
-  display: block;
-}
-.stat-label {
-  font-family: 'Inter', sans-serif;
-  font-size: 11px;
-  color: var(--fifa-silver);
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  margin-top: 6px;
-  display: block;
-}
+        /* ── Ball Size / Depth Classes ── */
+        /* z-index 1 = deepest / most transparent */
+        .ball-xs  { width: 20px;  height: 20px;  z-index: 1; }
+        .ball-sm  { width: 32px;  height: 32px;  z-index: 1; }
+        .ball-md  { width: 50px;  height: 50px;  z-index: 2; }
+        .ball-lg  { width: 65px;  height: 65px;  z-index: 2; }
+        .ball-xl  { width: 80px;  height: 80px;  z-index: 3; }
 
-/* ============================================================
-   VENUES
-   ============================================================ */
-.venues-section {
-  padding: 80px 40px;
-  position: relative;
-  z-index: 2;
-}
-.section-subtext {
-  font-family: 'Inter', sans-serif;
-  font-size: 15px;
-  color: var(--fifa-silver);
-  margin-bottom: 40px;
-  margin-top: 8px;
-}
-.venues-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
-}
-.venue-card {
-  background: rgba(26,58,110,0.25);
-  border: 0.5px solid rgba(255,255,255,0.08);
-  border-radius: 8px;
-  overflow: hidden;
-  transition: transform 0.25s, border-color 0.25s;
-  cursor: default;
-}
-.venue-card:hover {
-  transform: translateY(-5px);
-  border-color: rgba(201,162,39,0.5);
-}
-.venue-visual {
-  height: 155px;
-  background: linear-gradient(to bottom, var(--fifa-blue), #0d2140);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 56px;
-  position: relative;
-}
-.venue-visual::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 60px;
-  background: linear-gradient(to bottom, rgba(10,22,40,0), rgba(10,22,40,0.8));
-}
-.venue-info { padding: 18px 20px; }
-.venue-city {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 22px;
-  color: var(--fifa-white);
-  display: block;
-}
-.venue-stadium {
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  color: var(--fifa-silver);
-  margin-bottom: 10px;
-  display: block;
-}
-.venue-capacity {
-  font-family: 'Inter', sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--fifa-gold);
-}
+        /* ── Individual Ball Positions, Opacities & Animations ── */
 
-/* ============================================================
-   GROUPS
-   ============================================================ */
-.groups-section {
-  padding: 80px 40px;
-  background: linear-gradient(to bottom, var(--fifa-navy), var(--fifa-blue) 50%, var(--fifa-navy));
-  position: relative;
-  z-index: 2;
-}
-.groups-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 14px;
-  margin-top: 40px;
-}
-.group-card {
-  background: rgba(10,22,40,0.65);
-  border: 1px solid rgba(201,162,39,0.18);
-  border-radius: 8px;
-  padding: 20px;
-  transition: border-color 0.25s;
-}
-.group-card:hover { border-color: rgba(201,162,39,0.45); }
-.group-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 14px;
-}
-.group-letter {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 34px;
-  color: var(--fifa-gold);
-  line-height: 1;
-}
-.group-badge {
-  font-family: 'Inter', sans-serif;
-  font-size: 10px;
-  color: var(--fifa-silver);
-  background: rgba(255,255,255,0.07);
-  padding: 3px 8px;
-  border-radius: 3px;
-  letter-spacing: 0.5px;
-}
-.group-team {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-.group-team:last-child { border-bottom: none; }
-.team-flag { font-size: 20px; }
-.team-name {
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  color: var(--fifa-white);
-  flex: 1;
-}
-.team-pts {
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--fifa-gold);
-}
-.hidden-group { display: none; }
-.groups-toggle {
-  display: block;
-  margin: 24px auto 0;
-  background: transparent;
-  border: 1px solid rgba(201,162,39,0.4);
-  color: var(--fifa-gold);
-  font-family: 'Inter', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  padding: 10px 28px;
-  border-radius: 3px;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-}
-.groups-toggle:hover {
-  background: rgba(201,162,39,0.1);
-}
+        /* --- Deep layer (xs/sm, opacity 0.04–0.07) --- */
+        .ball-01 { top:  4%;  left:  3%;  opacity: 0.05; animation: floatBall    14s ease-in-out infinite; animation-delay: 0s; }
+        .ball-02 { top:  8%;  left: 22%;  opacity: 0.04; animation: driftBall    18s ease-in-out infinite; animation-delay: -3s; }
+        .ball-03 { top: 15%;  left: 48%;  opacity: 0.06; animation: gentleDrift  22s ease-in-out infinite; animation-delay: -7s; }
+        .ball-04 { top: 10%;  left: 72%;  opacity: 0.05; animation: floatBall    16s ease-in-out infinite; animation-delay: -2s; }
+        .ball-05 { top:  5%;  left: 90%;  opacity: 0.04; animation: driftBall    20s ease-in-out infinite; animation-delay: -5s; }
+        .ball-06 { top: 28%;  left:  8%;  opacity: 0.06; animation: spinFloat    24s ease-in-out infinite; animation-delay: -9s; }
+        .ball-07 { top: 35%;  left: 35%;  opacity: 0.05; animation: gentleDrift  17s ease-in-out infinite; animation-delay: -1s; }
+        .ball-08 { top: 30%;  left: 60%;  opacity: 0.04; animation: floatBall    21s ease-in-out infinite; animation-delay: -6s; }
+        .ball-09 { top: 25%;  left: 82%;  opacity: 0.06; animation: driftBall    15s ease-in-out infinite; animation-delay: -4s; }
+        .ball-10 { top: 50%;  left:  2%;  opacity: 0.05; animation: spinFloat    19s ease-in-out infinite; animation-delay: -8s; }
+        .ball-11 { top: 55%;  left: 18%;  opacity: 0.04; animation: gentleDrift  23s ease-in-out infinite; animation-delay: -2s; }
+        .ball-12 { top: 48%;  left: 42%;  opacity: 0.06; animation: floatBall    18s ease-in-out infinite; animation-delay: -11s; }
+        .ball-13 { top: 52%;  left: 68%;  opacity: 0.05; animation: driftBall    16s ease-in-out infinite; animation-delay: -3s; }
+        .ball-14 { top: 45%;  left: 88%;  opacity: 0.04; animation: spinFloat    25s ease-in-out infinite; animation-delay: -7s; }
+        .ball-15 { top: 70%;  left:  6%;  opacity: 0.06; animation: gentleDrift  20s ease-in-out infinite; animation-delay: -5s; }
+        .ball-16 { top: 75%;  left: 28%;  opacity: 0.05; animation: floatBall    22s ease-in-out infinite; animation-delay: -9s; }
+        .ball-17 { top: 68%;  left: 52%;  opacity: 0.04; animation: driftBall    17s ease-in-out infinite; animation-delay: -1s; }
+        .ball-18 { top: 72%;  left: 76%;  opacity: 0.06; animation: spinFloat    14s ease-in-out infinite; animation-delay: -6s; }
+        .ball-19 { top: 80%;  left: 92%;  opacity: 0.05; animation: gentleDrift  19s ease-in-out infinite; animation-delay: -4s; }
+        .ball-20 { top: 90%;  left: 12%;  opacity: 0.04; animation: floatBall    26s ease-in-out infinite; animation-delay: -10s; }
+        .ball-21 { top: 88%;  left: 40%;  opacity: 0.06; animation: driftBall    21s ease-in-out infinite; animation-delay: -2s; }
+        .ball-22 { top: 92%;  left: 62%;  opacity: 0.05; animation: spinFloat    16s ease-in-out infinite; animation-delay: -8s; }
 
-/* ============================================================
-   PLAYERS
-   ============================================================ */
-.players-section {
-  padding: 80px 40px;
-  position: relative;
-  z-index: 2;
-}
-.players-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
-  gap: 20px;
-  margin-top: 40px;
-}
-.player-card {
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.08);
-  transition: transform 0.28s, border-color 0.28s, box-shadow 0.28s;
-  position: relative;
-  cursor: default;
-}
-.player-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  background: var(--fifa-gold);
-  transform: scaleX(0);
-  transition: transform 0.28s;
-  z-index: 10;
-}
-.player-card:hover::before { transform: scaleX(1); }
-.player-card:hover {
-  transform: translateY(-5px);
-  border-color: rgba(201,162,39,0.45);
-  box-shadow: 0 16px 40px rgba(0,0,0,0.4);
-}
-.player-jersey-zone {
-  height: 160px;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.player-jersey-bg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-.player-jersey-svg {
-  position: relative;
-  z-index: 2;
-  width: 100px;
-  height: 120px;
-  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
-  transition: transform 0.28s;
-}
-.player-card:hover .player-jersey-svg {
-  transform: scale(1.06) translateY(-3px);
-}
-.jersey-ghost-num {
-  position: absolute;
-  bottom: 8px;
-  right: 12px;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 38px;
-  color: rgba(255,255,255,0.1);
-  z-index: 1;
-  line-height: 1;
-}
-.player-info {
-  padding: 14px 16px 18px;
-  background: rgba(10,22,40,0.7);
-}
-.player-name {
-  font-family: 'Oswald', sans-serif;
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--fifa-white);
-  margin-bottom: 3px;
-}
-.player-nation {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-family: 'Inter', sans-serif;
-  font-size: 12px;
-  color: var(--fifa-silver);
-  margin-bottom: 10px;
-}
-.player-stat-row {
-  display: flex;
-  align-items: baseline;
-  gap: 5px;
-}
-.player-stat-num {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 28px;
-  color: var(--fifa-gold);
-}
-.player-stat-label {
-  font-family: 'Inter', sans-serif;
-  font-size: 10px;
-  color: var(--fifa-silver);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
+        /* --- Mid layer (md, opacity 0.07–0.11) --- */
+        .ball-23 { top: 12%;  left: 12%;  opacity: 0.09; animation: floatBall    20s ease-in-out infinite; animation-delay: -4s; }
+        .ball-24 { top: 18%;  left: 58%;  opacity: 0.08; animation: driftBall    24s ease-in-out infinite; animation-delay: -12s; }
+        .ball-25 { top: 40%;  left: 26%;  opacity: 0.10; animation: gentleDrift  18s ease-in-out infinite; animation-delay: -6s; }
+        .ball-26 { top: 38%;  left: 75%;  opacity: 0.08; animation: spinFloat    22s ease-in-out infinite; animation-delay: -3s; }
+        .ball-27 { top: 62%;  left: 44%;  opacity: 0.09; animation: floatBall    15s ease-in-out infinite; animation-delay: -9s; }
+        .ball-28 { top: 78%;  left: 18%;  opacity: 0.11; animation: driftBall    19s ease-in-out infinite; animation-delay: -1s; }
+        .ball-29 { top: 82%;  left: 82%;  opacity: 0.08; animation: gentleDrift  23s ease-in-out infinite; animation-delay: -7s; }
 
-/* ============================================================
-   TIMELINE
-   ============================================================ */
-.schedule-section {
-  padding: 80px 40px;
-  background: linear-gradient(to bottom, var(--fifa-navy), var(--fifa-blue));
-  position: relative;
-  z-index: 2;
-}
-.timeline {
-  max-width: 800px;
-  margin: 40px auto 0;
-  padding-left: 44px;
-  position: relative;
-}
-.timeline::before {
-  content: '';
-  position: absolute;
-  left: 14px;
-  top: 0; bottom: 0;
-  width: 2px;
-  background: linear-gradient(to bottom, var(--fifa-gold), rgba(201,162,39,0.1));
-}
-.t-event {
-  position: relative;
-  margin-bottom: 36px;
-}
-.t-dot {
-  position: absolute;
-  left: -36px;
-  top: 4px;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--fifa-gold);
-  box-shadow: 0 0 0 5px rgba(201,162,39,0.18);
-}
-.t-date {
-  font-family: 'Inter', sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  color: var(--fifa-gold);
-  text-transform: uppercase;
-}
-.t-title {
-  font-family: 'Oswald', sans-serif;
-  font-size: 19px;
-  font-weight: 600;
-  color: var(--fifa-white);
-  margin: 3px 0;
-}
-.t-desc {
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  color: var(--fifa-silver);
-}
+        /* --- Foreground layer (lg/xl, opacity 0.11–0.15) --- */
+        .ball-30 { top:  6%;  left: 38%;  opacity: 0.12; animation: driftBall    28s ease-in-out infinite; animation-delay: -5s; }
+        .ball-31 { top: 22%;  left: 92%;  opacity: 0.13; animation: spinFloat    30s ease-in-out infinite; animation-delay: -14s; }
+        .ball-32 { top: 58%;  left:  0%;  opacity: 0.11; animation: floatBall    26s ease-in-out infinite; animation-delay: -2s; }
+        .ball-33 { top: 65%;  left: 88%;  opacity: 0.14; animation: gentleDrift  32s ease-in-out infinite; animation-delay: -10s; }
+        .ball-34 { top: 85%;  left: 55%;  opacity: 0.15; animation: driftBall    27s ease-in-out infinite; animation-delay: -6s; }
+        .ball-35 { top: 42%;  left: 95%;  opacity: 0.12; animation: spinFloat    29s ease-in-out infinite; animation-delay: -3s; }
 
-/* ============================================================
-   PREDICTOR
-   ============================================================ */
-.predictor-section {
-  padding: 80px 40px;
-  background: var(--fifa-navy);
-  position: relative;
-  z-index: 2;
-}
-.predictor-card {
-  max-width: 580px;
-  margin: 40px auto 0;
-  background: rgba(26,58,110,0.38);
-  border: 1px solid rgba(201,162,39,0.22);
-  border-radius: 12px;
-  padding: 40px;
-  text-align: center;
-}
-.predictor-logo-wrap {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 24px;
-}
-.predictor-match {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-}
-.predictor-team {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-.predictor-flag { font-size: 48px; line-height: 1; }
-.predictor-team-name {
-  font-family: 'Oswald', sans-serif;
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--fifa-white);
-}
-.predictor-vs {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 38px;
-  color: var(--fifa-gold);
-  opacity: 0.55;
-}
-.predictor-instruction {
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  color: var(--fifa-silver);
-  margin-bottom: 16px;
-}
-.score-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 20px;
-}
-.score-btn {
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.15);
-  color: var(--fifa-white);
-  padding: 10px 18px;
-  border-radius: 4px;
-  font-family: 'Inter', sans-serif;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.score-btn:hover { border-color: var(--fifa-gold); color: var(--fifa-gold); }
-.score-btn.active {
-  background: var(--fifa-gold);
-  color: var(--fifa-navy);
-  border-color: transparent;
-}
-.btn-submit {
-  width: 100%;
-  background: var(--fifa-gold);
-  color: var(--fifa-navy);
-  padding: 14px;
-  border-radius: 4px;
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  border: none;
-  cursor: pointer;
-  transition: opacity 0.2s, background 0.3s;
-}
-.btn-submit:hover { opacity: 0.87; }
-.btn-submit.locked {
-  background: #1D9E75;
-  cursor: default;
-  opacity: 1;
-}
-#predict-result {
-  margin-top: 16px;
-  min-height: 28px;
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  color: var(--fifa-silver);
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 0.4s, transform 0.4s;
-}
-#predict-result.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
+        /* ── Main Content ── */
+        .content {
+            position: relative;
+            z-index: 10;
+        }
 
-/* ============================================================
-   FOOTER
-   ============================================================ */
-footer {
-  background: rgba(0,0,0,0.42);
-  border-top: 1px solid rgba(201,162,39,0.18);
-  padding: 40px 24px;
-  text-align: center;
-  position: relative;
-  z-index: 2;
-}
-.footer-logo-wrap { display: flex; justify-content: center; margin-bottom: 16px; }
-.footer-nav {
-  display: flex;
-  justify-content: center;
-  gap: 24px;
-  flex-wrap: wrap;
-  margin-bottom: 18px;
-}
-.footer-nav a {
-  font-family: 'Inter', sans-serif;
-  font-size: 12px;
-  color: var(--fifa-silver);
-  transition: color 0.2s;
-}
-.footer-nav a:hover { color: var(--fifa-gold); }
-.footer-flags {
-  font-size: 18px;
-  margin-bottom: 16px;
-  letter-spacing: 8px;
-}
-.footer-copy {
-  font-family: 'Inter', sans-serif;
-  font-size: 12px;
-  color: rgba(255,255,255,0.22);
-  max-width: 600px;
-  margin: 0 auto;
-  line-height: 1.6;
-}
+        header {
+            text-align: center;
+            padding: 60px 20px 40px;
+        }
 
-/* ============================================================
-   SCROLL ANIMATIONS
-   ============================================================ */
-.fade-up {
-  opacity: 0;
-  transform: translateY(28px);
-  transition: opacity 0.55s ease, transform 0.55s ease;
-}
-.fade-up.in-view {
-  opacity: 1;
-  transform: translateY(0);
-}
-.fade-left {
-  opacity: 0;
-  transform: translateX(-24px);
-  transition: opacity 0.55s ease, transform 0.55s ease;
-}
-.fade-left.in-view {
-  opacity: 1;
-  transform: translateX(0);
-}
-.t-event {
-  opacity: 0;
-  transform: translateX(-20px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
-.t-event.in-view {
-  opacity: 1;
-  transform: translateX(0);
-}
+        header h1 {
+            font-size: clamp(2.5rem, 7vw, 5rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, #FFD700, #FFA500, #FF6B35);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
 
-/* ============================================================
-   ANIMATIONS
-   ============================================================ */
-@media (prefers-reduced-motion: no-preference) {
-  .pulse-dot {
-    animation: pulseDot 0.9s ease-in-out infinite;
-  }
-  .hero-badge-dot {
-    animation: heroBadgePulse 1.2s ease-in-out infinite;
-  }
-  .hero-logo-wrap {
-    animation: floatLogo 4s ease-in-out infinite;
-  }
-  .ticker-status.live {
-    animation: statusPulse 1.1s ease-in-out infinite;
-  }
-  .scroll-line {
-    animation: scrollBounce 2s ease-in-out infinite;
-  }
-}
+        header h2 {
+            font-size: clamp(1rem, 3vw, 1.6rem);
+            color: #a0c4ff;
+            margin-top: 10px;
+            font-weight: 300;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
 
-@keyframes pulseDot {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.2; }
-}
-@keyframes heroBadgePulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.4); }
-}
-@keyframes floatLogo {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-}
-@keyframes statusPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
-@keyframes scrollBounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(6px); }
-}
+        .tagline {
+            font-size: clamp(0.85rem, 2vw, 1.1rem);
+            color: #7ecfff;
+            margin-top: 8px;
+            opacity: 0.85;
+            letter-spacing: 2px;
+        }
 
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
-@media (max-width: 1024px) {
-  .venues-grid { grid-template-columns: repeat(2, 1fr); }
-  .players-grid { grid-template-columns: repeat(3, 1fr); }
-}
-@media (max-width: 768px) {
-  body { padding-top: 102px; }
-  nav { padding: 0 20px; }
-  .nav-links { display: none; }
-  .hamburger { display: flex; }
-  .btn-tickets { padding: 7px 14px; font-size: 10px; }
-  .venues-section, .groups-section, .players-section,
-  .schedule-section, .predictor-section { padding: 60px 20px; }
-  .venues-grid { grid-template-columns: 1fr; }
-  .players-grid { grid-template-columns: repeat(2, 1fr); }
-  .groups-grid { grid-template-columns: repeat(2, 1fr); }
-  .stats-grid { grid-template-columns: repeat(3, 1fr); }
-  .logo-section { display: none; }
-  .section-brand-divider { display: none; }
-  .banner-dots { display: none; }
-  .hero-headline { font-size: clamp(52px, 18vw, 120px); }
-}
-@media (max-width: 480px) {
-  .players-grid { grid-template-columns: 1fr; }
-  .groups-grid { grid-template-columns: 1fr; }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .predictor-card { padding: 24px 16px; }
-  .cd-block { padding: 12px 14px; min-width: 68px; }
-  .cd-num { font-size: 40px; }
-  .banner-anchor { width: 100px; padding: 0 8px; gap: 5px; }
-}
-@media (max-width: 375px) {
-  .hero-headline { font-size: 52px; }
-  .hero-subhead { font-size: 16px; }
-  .banner-live-text { font-size: 8px; }
-}
-</style>
+        .hero-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,165,0,0.1));
+            border: 1px solid rgba(255,215,0,0.4);
+            border-radius: 50px;
+            padding: 8px 28px;
+            margin-top: 18px;
+            font-size: 0.9rem;
+            color: #FFD700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        /* Host Countries */
+        .host-section {
+            max-width: 900px;
+            margin: 0 auto 50px;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .host-section h3 {
+            font-size: 1.4rem;
+            color: #FFD700;
+            margin-bottom: 24px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .host-countries {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .host-card {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 16px;
+            padding: 24px 32px;
+            min-width: 160px;
+            transition: transform 0.3s ease, background 0.3s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        .host-card:hover {
+            transform: translateY(-6px);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .host-card .flag {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .host-card .country {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            max-width: 1000px;
+            margin: 0 auto 60px;
+            padding: 0 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(100,160,255,0.2);
+            border-radius: 16px;
+            padding: 28px 20px;
+            text-align: center;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            backdrop-filter: blur(6px);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(100,160,255,0.5);
+        }
+
+        .stat-card .number {
+            font-size: 2.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+        }
+
+        .stat-card .label {
+            font-size: 0.85rem;
+            color: #a0c4ff;
+            margin-top: 6px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Groups Section */
+        .groups-section {
+            max-width: 1100px;
+            margin: 0 auto 60px;
+            padding: 0 20px;
+        }
+
+        .groups-section h3 {
+            text-align: center;
+            font-size: 1.4rem;
+            color: #FFD700;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .groups-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .group-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 18px;
+            transition: transform 0.2s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        .group-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .group-card h4 {
+            font-size: 0.8rem;
+            color: #FFD700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            border-bottom: 1px solid rgba(255,215,0,0.2);
+            padding-bottom: 8px;
+        }
+
+        .group-card .team {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 5px 0;
+            font-size: 0.9rem;
+            color: #dde8ff;
+        }
+
+        .group-card .team .tf {
+            font-size: 1.2rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: rgba(255,255,255,0.35);
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            border-top: 1px solid rgba(255,255,255,0.07);
+        }
+    </style>
 </head>
 <body>
 
-<!-- ============================================================
-     CANVAS
-     ============================================================ -->
-<canvas id="ball-canvas" aria-hidden="true"></canvas>
+    <!-- ══════════════════════════════════════════
+         BACKGROUND SOCCER BALLS
+    ══════════════════════════════════════════ -->
+    <div class="bg-balls-container" aria-hidden="true">
 
-<!-- ============================================================
-     NAVIGATION
-     ============================================================ -->
-<nav role="navigation" aria-label="Main navigation">
-  <div class="nav-logo">
-    <!-- LOGO PLACEMENT 1: NAV BAR -->
-    <svg class="logo-nav" viewBox="0 0 280 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="FIFA World Cup 2026 Logo">
-      <defs>
-        <linearGradient id="goldGrad-nav" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#f5d675"/>
-          <stop offset="50%" stop-color="#c9a227"/>
-          <stop offset="100%" stop-color="#a07a10"/>
-        </linearGradient>
-        <radialGradient id="trophyGrad-nav" cx="50%" cy="40%" r="55%">
-          <stop offset="0%" stop-color="#f5e88a"/>
-          <stop offset="100%" stop-color="#c9a227"/>
-        </radialGradient>
-        <filter id="trophyShadow-nav">
-          <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#c9a227" flood-opacity="0.7"/>
-        </filter>
-      </defs>
-      <rect width="280" height="380" fill="#0a1628" rx="4"/>
-      <rect width="280" height="380" fill="none" stroke="#c9a227" stroke-width="2" rx="4"/>
-      <!-- "2" numeral -->
-      <g fill="url(#goldGrad-nav)">
-        <rect x="70" y="28" width="140" height="18" rx="4"/>
-        <rect x="172" y="28" width="38" height="80" rx="4"/>
-        <rect x="70" y="90" width="140" height="18" rx="4"/>
-        <rect x="70" y="108" width="38" height="80" rx="4"/>
-        <rect x="70" y="170" width="140" height="18" rx="4"/>
-      </g>
-      <!-- "6" numeral -->
-      <g fill="url(#goldGrad-nav)">
-        <rect x="70" y="198" width="140" height="18" rx="4"/>
-        <rect x="70" y="216" width="38" height="80" rx="4"/>
-        <rect x="70" y="278" width="140" height="18" rx="4"/>
-        <rect x="172" y="278" width="38" height="58" rx="4"/>
-        <rect x="70" y="318" width="140" height="18" rx="4"/>
-        <rect x="70" y="258" width="140" height="18" rx="4"/>
-      </g>
-      <!-- Trophy -->
-      <g filter="url(#trophyShadow-nav)" fill="url(#trophyGrad-nav)">
-        <rect x="118" y="318" width="44" height="22" rx="3"/>
-        <rect x="108" y="308" width="64" height="14" rx="2"/>
-        <rect x="122" y="250" width="36" height="62" rx="4"/>
-        <path d="M100,180 Q85,200 88,230 Q92,250 122,252 L158,252 Q188,250 192,230 Q195,200 180,180 Q165,165 140,162 Q115,165 100,180 Z"/>
-        <path d="M88,230 Q78,235 75,248 L88,248 Z"/>
-        <path d="M192,230 Q202,235 205,248 L192,248 Z"/>
-        <path d="M120,162 Q112,148 115,135 Q125,125 140,124 Q155,125 165,135 Q168,148 160,162 Z"/>
-        <circle cx="140" cy="118" r="14"/>
-        <path d="M126,124 Q118,112 116,100 L108,92 Q104,88 108,84 Q112,80 116,84 L122,90 Q130,85 140,84 Q150,85 158,90 L164,84 Q168,80 172,84 Q176,88 172,92 L164,100 Q162,112 154,124 Z"/>
-      </g>
-      <!-- FIFA wordmark -->
-      <text x="140" y="358" text-anchor="middle" font-family="'Bebas Neue', sans-serif" font-size="38" fill="#ffffff" letter-spacing="4">FIFA</text>
-      <!-- Host nations -->
-      <text x="140" y="375" text-anchor="middle" font-family="'Inter', sans-serif" font-size="8" fill="#b0b8c8" letter-spacing="2">CANADA · MEXICO · USA</text>
-    </svg>
-  </div>
+        <!-- Deep layer — extra-small balls -->
+        <div class="soccer-ball ball-xs ball-01"></div>
+        <div class="soccer-ball ball-xs ball-02"></div>
+        <div class="soccer-ball ball-xs ball-03"></div>
+        <div class="soccer-ball ball-xs ball-04"></div>
+        <div class="soccer-ball ball-xs ball-05"></div>
+        <div class="soccer-ball ball-xs ball-10"></div>
+        <div class="soccer-ball ball-xs ball-14"></div>
+        <div class="soccer-ball ball-xs ball-19"></div>
+        <div class="soccer-ball ball-xs ball-20"></div>
+        <div class="soccer-ball ball-xs ball-22"></div>
 
-  <ul class="nav-links" role="list">
-    <li><a href="#venues" onclick="navTo(event,'venues')" aria-label="Go to Venues section">Venues</a></li>
-    <li><a href="#groups" onclick="navTo(event,'groups')" aria-label="Go to Groups section">Groups</a></li>
-    <li><a href="#players" onclick="navTo(event,'players')" aria-label="Go to Stars section">Stars</a></li>
-    <li><a href="#schedule" onclick="navTo(event,'schedule')" aria-label="Go to Schedule section">Schedule</a></li>
-    <li><a href="#predictor" onclick="navTo(event,'predictor')" aria-label="Go to Predictor section">Predictor</a></li>
-  </ul>
+        <!-- Deep layer — small balls -->
+        <div class="soccer-ball ball-sm ball-06"></div>
+        <div class="soccer-ball ball-sm ball-07"></div>
+        <div class="soccer-ball ball-sm ball-08"></div>
+        <div class="soccer-ball ball-sm ball-09"></div>
+        <div class="soccer-ball ball-sm ball-11"></div>
+        <div class="soccer-ball ball-sm ball-12"></div>
+        <div class="soccer-ball ball-sm ball-13"></div>
+        <div class="soccer-ball ball-sm ball-15"></div>
+        <div class="soccer-ball ball-sm ball-16"></div>
+        <div class="soccer-ball ball-sm ball-17"></div>
+        <div class="soccer-ball ball-sm ball-18"></div>
+        <div class="soccer-ball ball-sm ball-21"></div>
 
-  <div style="display:flex;align-items:center;gap:16px;">
-    <a href="https://www.ticketmaster.com/fifaworldcup2026" target="_blank" rel="noopener noreferrer" class="btn-tickets" aria-label="Get FIFA World Cup 2026 tickets on Ticketmaster (opens in new tab)">
-      GET TICKETS <span class="ext-icon">↗</span>
-    </a>
-    <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-expanded="false">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-</nav>
+        <!-- Mid layer — medium balls -->
+        <div class="soccer-ball ball-md ball-23"></div>
+        <div class="soccer-ball ball-md ball-24"></div>
+        <div class="soccer-ball ball-md ball-25"></div>
+        <div class="soccer-ball ball-md ball-26"></div>
+        <div class="soccer-ball ball-md ball-27"></div>
+        <div class="soccer-ball ball-md ball-28"></div>
+        <div class="soccer-ball ball-md ball-29"></div>
 
-<!-- Mobile menu -->
-<div class="mobile-menu" id="mobile-menu" role="navigation" aria-label="Mobile navigation">
-  <a href="#venues" onclick="navTo(event,'venues');closeMobileMenu();" aria-label="Go to Venues section">Venues</a>
-  <a href="#groups" onclick="navTo(event,'groups');closeMobileMenu();" aria-label="Go to Groups section">Groups</a>
-  <a href="#players" onclick="navTo(event,'players');closeMobileMenu();" aria-label="Go to Stars section">Stars</a>
-  <a href="#schedule" onclick="navTo(event,'schedule');closeMobileMenu();" aria-label="Go to Schedule section">Schedule</a>
-  <a href="#predictor" onclick="navTo(event,'predictor');closeMobileMenu();" aria-label="Go to Predictor section">Predictor</a>
-</div>
+        <!-- Foreground layer — large balls -->
+        <div class="soccer-ball ball-lg ball-30"></div>
+        <div class="soccer-ball ball-lg ball-31"></div>
+        <div class="soccer-ball ball-lg ball-32"></div>
+        <div class="soccer-ball ball-lg ball-35"></div>
 
-<!-- ============================================================
-     LIVE SCORES BANNER
-     ============================================================ -->
-<div class="scores-banner" role="marquee" aria-label="Live match scores">
-  <div class="banner-anchor">
-    <!-- LOGO PLACEMENT 3: TICKER BANNER -->
-    <svg class="logo-ticker" viewBox="0 0 280 380" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <defs>
-        <linearGradient id="goldGrad-ticker" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#f5d675"/>
-          <stop offset="50%" stop-color="#c9a227"/>
-          <stop offset="100%" stop-color="#a07a10"/>
-        </linearGradient>
-        <radialGradient id="trophyGrad-ticker" cx="50%" cy="40%" r="55%">
-          <stop offset="0%" stop-color="#f5e88a"/>
-          <stop offset="100%" stop-color="#c9a227"/>
-        </radialGradient>
-        <filter id="trophyShadow-ticker">
-          <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#c9a227" flood-opacity="0.7"/>
-        </filter>
-      </defs>
-      <rect width="280" height="380" fill="#0a1628" rx="4"/>
-      <rect width="280" height="380" fill="none" stroke="#c9a227" stroke-width="2" rx="4"/>
-      <g fill="url(#goldGrad-ticker)">
-        <rect x="70" y="28" width="140" height="18" rx="4"/>
-        <rect x="172" y="28" width="38" height="80" rx="4"/>
-        <rect x="70" y="90" width="140" height="18" rx="4"/>
-        <rect x="70" y="108" width="38" height="80" rx="4"/>
-        <rect x="70" y="170" width="140" height="18" rx="4"/>
-      </g>
-      <g fill="url(#goldGrad-ticker)">
-        <rect x="70" y="198" width="140" height="18" rx="4"/>
-        <rect x="70" y="216" width="38" height="80" rx="4"/>
-        <rect x="70" y="278" width="140" height="18" rx="4"/>
-        <rect x="172" y="278" width="38" height="58" rx="4"/>
-        <rect x="70" y="318" width="140" height="18" rx="4"/>
-        <rect x="70" y="258" width="140" height="18" rx="4"/>
-      </g>
-      <g filter="url(#trophyShadow-ticker)" fill="url(#trophyGrad-ticker)">
-        <rect x="118" y="318" width="44" height="22" rx="3"/>
-        <rect x="108" y="308" width="64" height="14" rx="2"/>
-        <rect x="122" y="250" width="36" height="62" rx="4"/>
-        <path d="M100,180 Q85,200 88,230 Q92,250 122,252 L158,252 Q188,250 192,230 Q195,200 180,180 Q165,165 140,162 Q115,165 100,180 Z"/>
-        <path d="M88,230 Q78,235 75,248 L88,248 Z"/>
-        <path d="M192,230 Q202,235 205,248 L192,248 Z"/>
-        <path d="M120,162 Q112,148 115,135 Q125,125 140,124 Q155,125 165,135 Q168,148 160,162 Z"/>
-        <circle cx="140" cy="118" r="14"/>
-        <path d="M126,124 Q118,112 116,100 L108,92 Q104,88 108,84 Q112,80 116,84 L122,90 Q130,85 140,84 Q150,85 158,90 L164,84 Q168,80 172,84 Q176,88 172,92 L164,100 Q162,112 154,124 Z"/>
-      </g>
-      <text x="140" y="358" text-anchor="middle" font-family="'Bebas Neue', sans-serif" font-size="38" fill="#ffffff" letter-spacing="4">FIFA</text>
-      <text x="140" y="375" text-anchor="middle" font-family="'Inter', sans-serif" font-size="8" fill="#b0b8c8" letter-spacing="2">CANADA · MEXICO · USA</text>
-    </svg>
-    <span class="banner-live-text">LIVE</span>
-    <span class="pulse-dot" aria-hidden="true"></span>
-  </div>
-  <div class="banner-ticker-wrap">
-    <div id="ticker-item" aria-live="polite" aria-atomic="true"></div>
-    <div class="banner-dots" id="banner-dots" aria-hidden="true"></div>
-  </div>
-</div>
+        <!-- Foreground layer — extra-large balls -->
+        <div class="soccer-ball ball-xl ball-33"></div>
+        <div class="soccer-ball ball-xl ball-34"></div>
 
-<!-- ============================================================
-     HERO SECTION
-     ============================================================ -->
-<section id="hero" aria-labelledby="hero-heading">
-  <div class="hero">
-    <div class="hero-bg"></div>
-    <!-- SVG pitch lines -->
-    <svg class="hero-pitch" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
-      <rect width="1200" height="800" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2"/>
-      <line x1="600" y1="0" x2="600" y2="800" stroke="rgba(255,255,255,0.6)" stroke-width="2"/>
-      <circle cx="600" cy="400" r="91" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2"/>
-      <circle cx="600" cy="400" r="4" fill="rgba(255,255,255,0.6)"/>
-      <rect x="0" y="220" width="132" height="360" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2"/>
-      <rect x="1068" y="220" width="132" height="360" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2"/>
-      <rect x="0" y="310" width="44" height="180" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2"/>
-      <rect x="1156" y="310" width="44" height="180" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2"/>
-      <circle cx="132" cy="400" r="91" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2"/>
-      <circle cx="1068" cy="400" r="91" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2"/>
-    </svg>
-
-    <div class="hero-content">
-      <div class="hero-badge">
-        <span class="hero-badge-dot" aria-hidden="true"></span>
-        <span class="hero-badge-text">LIVE NOW · 2026 TOURNAMENT IN PROGRESS</span>
-      </div>
-
-      <!-- LOGO PLACEMENT 2: HERO SECTION -->
-      <div class="hero-logo-wrap">
-        <svg class="logo-hero" viewBox="0 0 280 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="FIFA World Cup 2026">
-          <defs>
-            <linearGradient id="goldGrad-hero" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#f5d675"/>
-              <stop offset="50%" stop-color="#c9a227"/>
-              <stop offset="100%" stop-color="#a07a10"/>
-            </linearGradient>
-            <radialGradient id="trophyGrad-hero" cx="50%" cy="40%" r="55%">
-              <stop offset="0%" stop-color="#f5e88a"/>
-              <stop offset="100%" stop-color="#c9a227"/>
-            </radialGradient>
-            <filter id="trophyShadow-hero">
-              <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#c9a227" flood-opacity="0.7"/>
-            </filter>
-          </defs>
-          <rect width="280" height="380" fill="#0a1628" rx="4"/>
-          <rect width="280" height="380" fill="none" stroke="#c9a227" stroke-width="2" rx="4"/>
-          <g fill="url(#goldGrad-hero)">
-            <rect x="70" y="28" width="140" height="18" rx="4"/>
-            <rect x="172" y="28" width="38" height="80" rx="4"/>
-            <rect x="70" y="90" width="140" height="18" rx="4"/>
-            <rect x="70" y="108" width="38" height="80" rx="4"/>
-            <rect x="70" y="170" width="140" height="18" rx="4"/>
-          </g>
-          <g fill="url(#goldGrad-hero)">
-            <rect x="70" y="198" width="140" height="18" rx="4"/>
-            <rect x="70" y="216" width="38" height="80" rx="4"/>
-            <rect x="70" y="278" width="140" height="18" rx="4"/>
-            <rect x="172" y="278" width="38" height="58" rx="4"/>
-            <rect x="70" y="318" width="140" height="18" rx="4"/>
-            <rect x="70" y="258" width="140" height="18" rx="4"/>
-          </g>
-          <g filter="url(#trophyShadow-hero)" fill="url(#trophyGrad-hero)">
-            <rect x="118" y="318" width="44" height="22" rx="3"/>
-            <rect x="108" y="308" width="64" height="14" rx="2"/>
-            <rect x="122" y="250" width="36" height="62" rx="4"/>
-            <path d="M100,180 Q85,200 88,230 Q92,250 122,252 L158,252 Q188,250 192,230 Q195,200 180,180 Q165,165 140,162 Q115,165 100,180 Z"/>
-            <path d="M88,230 Q78,235 75,248 L88,248 Z"/>
-            <path d="M192,230 Q202,235 205,248 L192,248 Z"/>
-            <path d="M120,162 Q112,148 115,135 Q125,125 140,124 Q155,125 165,135 Q168,148 160,162 Z"/>
-            <circle cx="140" cy="118" r="14"/>
-            <path d="M126,124 Q118,112 116,100 L108,92 Q104,88 108,84 Q112,80 116,84 L122,90 Q130,85 140,84 Q150,85 158,90 L164,84 Q168,80 172,84 Q176,88 172,92 L164,100 Q162,112 154,124 Z"/>
-          </g>
-          <text x="140" y="358" text-anchor="middle" font-family="'Bebas Neue', sans-serif" font-size="38" fill="#ffffff" letter-spacing="4">FIFA</text>
-          <text x="140" y="375" text-anchor="middle" font-family="'Inter', sans-serif" font-size="8" fill="#b0b8c8" letter-spacing="2">CANADA · MEXICO · USA</text>
-        </svg>
-      </div>
-
-      <h1 class="hero-headline" id="hero-heading">WE ARE 26</h1>
-      <p class="hero-subhead">USA · CANADA · MEXICO · 2026</p>
-      <p class="hero-flags" aria-label="Host nations: United States, Canada, Mexico">
-        <span aria-hidden="true">🇺🇸</span> United States &nbsp;✦&nbsp; <span aria-hidden="true">🇨🇦</span> Canada &nbsp;✦&nbsp; <span aria-hidden="true">🇲🇽</span> Mexico
-      </p>
-
-      <!-- Countdown -->
-      <div class="countdown" role="timer" aria-live="polite" aria-atomic="true" aria-label="Countdown to FIFA World Cup 2026 Opening Match">
-        <div class="cd-block fade-up">
-          <span class="cd-num" id="cd-days">000</span>
-          <span class="cd-label">Days</span>
-        </div>
-        <div class="cd-block fade-up">
-          <span class="cd-num" id="cd-hours">00</span>
-          <span class="cd-label">Hours</span>
-        </div>
-        <div class="cd-block fade-up">
-          <span class="cd-num" id="cd-mins">00</span>
-          <span class="cd-label">Minutes</span>
-        </div>
-        <div class="cd-block fade-up">
-          <span class="cd-num" id="cd-secs">00</span>
-          <span class="cd-label">Seconds</span>
-        </div>
-      </div>
-
-      <div class="hero-ctas">
-        <button class="btn-primary" onclick="navTo(event,'groups')" aria-label="Explore the group draw">EXPLORE THE DRAW</button>
-        <button class="btn-secondary" onclick="navTo(event,'predictor')" aria-label="Make a match prediction">MAKE A PREDICTION</button>
-      </div>
     </div>
 
-    <div class="scroll-indicator" aria-hidden="true">
-      <span class="scroll-text">SCROLL</span>
-      <span class="scroll-line"></span>
-    </div>
-  </div>
-</section>
+    <!-- ══════════════════════════════════════════
+         MAIN CONTENT
+    ══════════════════════════════════════════ -->
+    <div class="content">
 
-<!-- ============================================================
-     STATS STRIP
-     ============================================================ -->
-<section id="stats" class="stats-strip" aria-label="Tournament statistics">
-  <!-- LOGO PLACEMENT 4: STATS STRIP -->
-  <div class="stats-logo-wrap">
-    <svg class="logo-stamp" viewBox="0 0 280 380" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <defs>
-        <linearGradient id="goldGrad-stamp" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#f5d675"/>
-          <stop offset="50%" stop-color="#c9a227"/>
-          <stop offset="100%" stop-color="#a07a10"/>
-        </linearGradient>
-        <radialGradient id="trophyGrad-stamp" cx="50%" cy="40%" r="55%">
-          <stop offset="0%" stop-color="#f5e88a"/>
-          <stop offset="100%" stop-color="#c9a227"/>
-        </radialGradient>
-        <filter id="trophyShadow-stamp">
-          <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#c9a227" flood-opacity="0.7"/>
-        </filter>
-      </defs>
-      <rect width="280" height="380" fill="#0a1628" rx="4"/>
-      <rect width="280" height="380" fill="none" stroke="#c9a227" stroke-width="2" rx="4"/>
-      <g fill="url(#goldGrad-stamp)">
-        <rect x="70" y="28" width="140" height="18" rx="4"/>
-        <rect x="172" y="28" width="38" height="80" rx="4"/>
-        <rect x="70" y="90" width="140" height="18" rx="4"/>
-        <rect x="70" y="108" width="38" height="80" rx="4"/>
-        <rect x="70" y="170" width="140" height="18" rx="4"/>
-      </g>
-      <g fill="url(#goldGrad-stamp)">
-        <rect x="70" y="198" width="140" height="18" rx="4"/>
-        <rect x="70" y="216" width="38" height="80" rx="4"/>
-        <rect x="70" y="278" width="140" height="18" rx="4"/>
-        <rect x="172" y="278" width="38" height="58" rx="4"/>
-        <rect x="70" y="318" width="140" height="18" rx="4"/>
-        <rect x="70" y="258" width="140" height="18" rx="4"/>
-      </g>
-      <g filter="url(#trophyShadow-stamp)" fill="url(#trophyGrad-stamp)">
-        <rect x="118" y="318" width="44" height="22" rx="3"/>
-        <rect x="108" y="308" width="64" height="14" rx="2"/>
-        <rect x="122" y="250" width="36" height="62" rx="4"/>
-        <path d="M100,180 Q85,200 88,230 Q92,250 122,252 L158,252 Q188,250 192,230 Q195,200 180,180 Q165,165 140,162 Q115,165 100,180 Z"/>
-        <path d="M88,230 Q78,235 75,248 L88,248 Z"/>
-        <path d="M192,230 Q202,235 205,248 L192,248 Z"/>
-        <path d="M120,162 Q112,148 115,135 Q125,125 140,124 Q155,125 165,135 Q168,148 160,162 Z"/>
-        <circle cx="140" cy="118" r="14"/>
-        <path d="M126,124 Q118,112 116,100 L108,92 Q104,88 108,84 Q112,80 116,84 L122,90 Q130,85 140,84 Q150,85 158,90 L164,84 Q168,80 172,84 Q176,88 172,92 L164,100 Q162,112 154,124 Z"/>
-      </g>
-      <text x="140" y="358" text-anchor="middle" font-family="'Bebas Neue', sans-serif" font-size="38" fill="#ffffff" letter-spacing="4">FIFA</text>
-      <text x="140" y="375" text-anchor="middle" font-family="'Inter', sans-serif" font-size="8" fill="#b0b8c8" letter-spacing="2">CANADA · MEXICO · USA</text>
-    </svg>
-  </div>
-  <div class="stats-grid">
-    <div class="stat-item fade-up">
-      <span class="stat-num" data-target="48">0</span>
-      <span class="stat-label">Teams</span>
-    </div>
-    <div class="stat-item fade-up">
-      <span class="stat-num" data-target="104">0</span>
-      <span class="stat-label">Matches</span>
-    </div>
-    <div class="stat-item fade-up">
-      <span class="stat-num" data-target="16">0</span>
-      <span class="stat-label">Host Cities</span>
-    </div>
-    <div class="stat-item fade-up">
-      <span class="stat-num">5B+</span>
-      <span class="stat-label">Expected Viewers</span>
-    </div>
-    <div class="stat-item fade-up">
-      <span class="stat-num" data-target="3">0</span>
-      <span class="stat-label">Host Nations</span>
-    </div>
-    <div class="stat-item fade-up">
-      <span class="stat-num">$100M</span>
-      <span class="stat-label">Prize Fund</span>
-    </div>
-  </div>
-</section>
+        <header>
+            <h1>FIFA World Cup 2026™</h1>
+            <h2>United · Uniting the World</h2>
+            <p class="tagline">June 11 – July 19, 2026</p>
+            <span class="hero-badge">⚽ 48 Teams · 3 Nations · 1 Champion</span>
+        </header>
 
-<!-- ============================================================
-     VENUES SECTION
-     ============================================================ -->
-<section id="venues" class="venues-section" aria-labelledby="venues-heading">
-  <!-- LOGO PLACEMENT 5: VENUES HEADER -->
-  <div class="section-brand-row fade-left">
-    <svg class="logo-section" viewBox="0 0 280 380" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <defs>
-        <linearGradient id="goldGrad-v" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#f5d675"/>
-          <stop offset="50%" stop-color="#c9a227"/>
-          <stop offset="100%" stop-color="#a07a10"/>
-        </linearGradient>
-        <radialGradient id="trophyGrad-v" cx="50%" cy="40%" r="55%">
-          <stop offset="0%" stop-color="#f5e88a"/>
-          <stop offset="100%" stop-color="#c9a227"/>
-        </radialGradient>
-        <filter id="ts-v"><feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#c9a227" flood-opacity="0.7"/></filter>
-      </defs>
-      <rect width="280" height="380" fill="#0a1628" rx="4"/>
-      <rect width="280" height="380" fill="none" stroke="#c9a227" stroke-width="2" rx="4"/>
-      <g fill="url(#goldGrad-v)"><rect x="70" y="28" width="140" height="18" rx="4"/><rect x="172" y="28" width="38" height="80" rx="4"/><rect x="70" y="90" width="140" height="18" rx="4"/><rect x="70" y="108" width="38" height="80" rx="4"/><rect x="70" y="170" width="140" height="18" rx="4"/></g>
-      <g fill="url(#goldGrad-v)"><rect x="70" y="198" width="140" height="18" rx="4"/><rect x="70" y="216" width="38" height="80" rx="4"/><rect x="70" y="278" width="140" height="18" rx="4"/><rect x="172" y="278" width="38" height="58" rx="4"/><rect x="70" y="318" width="140" height="18" rx="4"/><rect x="70" y="258" width="140" height="18" rx="4"/></g>
-      <g filter="url(#ts-v)" fill="url(#trophyGrad-v)"><rect x="118" y="318" width="44" height="22" rx="3"/><rect x="108" y="308" width="64" height="14" rx="2"/><rect x="122" y="250" width="36" height="62" rx="4"/><path d="M100,180 Q85,200 88,230 Q92,250 122,252 L158,252 Q188,250 192,230 Q195,200 180,180 Q165,165 140,162 Q115,165 100,180 Z"/><path d="M88,230 Q78,235 75,248 L88,248 Z"/><path d="M192,230 Q202,235 205,248 L192,248 Z"/><path d="M120,162 Q112,148 115,135 Q125,125 140,124 Q155,125 165,135 Q168,148 160,162 Z"/><circle cx="140" cy="118" r="14"/><path d="M126,124 Q118,112 116,100 L108,92 Q104,88 108,84 Q112,80 116,84 L122,90 Q130,85 140,84 Q150,85 158,90 L164,84 Q168,80 172,84 Q176,88 172,92 L164,100 Q162,112 154,124 Z"/></g>
-      <text x="140" y="358" text-anchor="middle" font-family="'Bebas Neue', sans-serif" font-size="38" fill="#ffffff" letter-spacing="4">FIFA</text>
-      <text x="140" y="375" text-anchor="middle" font-family="'Inter', sans-serif" font-size="8" fill="#b0b8c8" letter-spacing="2">CANADA · MEXICO · USA</text>
-    </svg>
-    <div class="section-brand-divider"></div>
-    <div class="section-brand-text">
-      <span class="section-label">HOST STADIUMS</span>
-      <h2 class="section-title" id="venues-heading">ICONIC <em>VENUES</em></h2>
-    </div>
-  </div>
-  <p class="section-subtext">16 cities across three nations — the biggest World Cup in history.</p>
+        <!-- Host Countries -->
+        <section class="host-section">
+            <h3>🌎 Host Countries</h3>
+            <div class="host-countries">
+                <div class="host-card">
+                    <span class="flag">🇺🇸</span>
+                    <span class="country">USA</span>
+                </div>
+                <div class="host-card">
+                    <span class="flag">🇨🇦</span>
+                    <span class="country">Canada</span>
+                </div>
+                <div class="host-card">
+                    <span class="flag">🇲🇽</span>
+                    <span class="country">Mexico</span>
+                </div>
+            </div>
+        </section>
 
-  <div class="venues-grid">
-    <div class="venue-card fade-up">
-      <div class="venue-visual"><span aria-hidden="true">🏟️</span></div>
-      <div class="venue-info">
-        <span class="venue-city">New York / NJ</span>
-        <span class="venue-stadium">MetLife Stadium</span>
-        <span class="venue-capacity">⚽ 82,500 seats · FINAL</span>
-      </div>
-    </div>
-    <div class="venue-card fade-up">
-      <div class="venue-visual"><span aria-hidden="true">🏟️</span></div>
-      <div class="venue-info">
-        <span class="venue-city">Mexico City</span>
-        <span class="venue-stadium">Estadio Azteca</span>
-        <span class="venue-capacity">⚽ 87,523 seats · OPENING MATCH</span>
-      </div>
-    </div>
-    <div class="venue-card fade-up">
-      <div class="venue-visual"><span aria-hidden="true">🏟️</span></div>
-      <div class="venue-info">
-        <span class="venue-city">Los Angeles</span>
-        <span class="venue-stadium">SoFi Stadium</span>
-        <span class="venue-capacity">⚽ 70,000 seats · SEMI-FINAL</span>
-      </div>
-    </div>
-    <div class="venue-card fade-up">
-      <div class="venue-visual"><span aria-hidden="true">🏟️</span></div>
-      <div class="venue-info">
-        <span class="venue-city">Dallas</span>
-        <span class="venue-stadium">AT&amp;T Stadium</span>
-        <span class="venue-capacity">⚽ 80,000 seats · QUARTER-FINAL</span>
-      </div>
-    </div>
-    <div class="venue-card fade-up">
-      <div class="venue-visual"><span aria-hidden="true">🏟️</span></div>
-      <div class="venue-info">
-        <span class="venue-city">Vancouver</span>
-        <span class="venue-stadium">BC Place</span>
-        <span class="venue-capacity">⚽ 54,500 seats · GROUP STAGE</span>
-      </div>
-    </div>
-    <div class="venue-card fade-up">
-      <div class="venue-visual"><span aria-hidden="true">🏟️</span></div>
-      <div class="venue-info">
-        <span class="venue-city">San Francisco</span>
-        <span class="venue-stadium">Levi's Stadium</span>
-        <span class="venue-capacity">⚽ 68,500 seats · GROUP STAGE</span>
-      </div>
-    </div>
-  </div>
-</section>
+        <!-- Tournament Stats -->
+        <section class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="number">48</span>
+                    <span class="label">Teams</span>
+                </div>
+                <div class="stat-card">
+                    <span class="number">104</span>
+                    <span class="label">Matches</span>
+                </div>
+                <div class="stat-card">
+                    <span class="number">16</span>
+                    <span class="label">Groups</span>
+                </div>
+                <div class="stat-card">
+                    <span class="number">3</span>
+                    <span class="label">Host Nations</span>
+                </div>
+                <div class="stat-card">
+                    <span class="number">16</span>
+                    <span class="label">Venues</span>
+                </div>
+                <div class="stat-card">
+                    <span class="number">39</span>
+                    <span class="label">Days</span>
+                </div>
+            </div>
+        </section>
 
-<!-- ============================================================
-     GROUPS SECTION
-     ============================================================ -->
-<section id="groups" class="groups-section" aria-labelledby="groups-heading">
-  <!-- LOGO PLACEMENT 6: GROUPS HEADER -->
-  <div class="section-brand-row fade-left">
-    <svg class="logo-section" viewBox="0 0 280 380" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <defs>
-        <linearGradient id="goldGrad-g" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#f5d675"/>
-          <stop offset="50%" stop-color="#c9a227"/>
-          <stop offset="100%" stop-color="#a07a10"/>
-        </linearGradient>
-        <radialGradient id="trophyGrad-g" cx="50%" cy="40%" r="55%">
-          <stop offset="0%" stop-color="#f5e88a"/>
-          <stop offset="100%" stop-color="#c9a227"/>
-        </radialGradient>
-        <filter id="ts-g"><feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#c9a227" flood-opacity="0.7"/></filter>
-      </defs>
-      <rect width="280" height="380" fill="#0a1628" rx="4"/>
-      <rect width="280" height="380" fill="none" stroke="#c9a227" stroke-width="2" rx="4"/>
-      <g fill="url(#goldGrad-g)"><rect x="70" y="28" width="140" height="18" rx="4"/><rect x="172" y="28" width="38" height="80" rx="4"/><rect x="70" y="90" width="140" height="18" rx="4"/><rect x="70" y="108" width="38" height="80" rx="4"/><rect x="70" y="170" width="140" height="18" rx="4"/></g>
-      <g fill="url(#goldGrad-g)"><rect x="70" y="198" width="140" height="18" rx="4"/><rect x="70" y="216" width="38" height="80" rx="4"/><rect x="70" y="278" width="140" height="18" rx="4"/><rect x="172" y="278" width="38" height="58" rx="4"/><rect x="70" y="318" width="140" height="18" rx="4"/><rect x="70" y="258" width="140" height="18" rx="4"/></g>
-      <g filter="url(#ts-g)" fill="url(#trophyGrad-g)"><rect x="118" y="318" width="44" height="22" rx="3"/><rect x="108" y="308" width="64" height="14" rx="2"/><rect x="122" y="250" width="36" height="62" rx="4"/><path d="M100,180 Q85,200 88,230 Q92,250 122,252 L158,252 Q188,250 192,230 Q195,200 180,180 Q165,165 140,162 Q115,165 100,180 Z"/><path d="M88,230 Q78,235 75,248 L88,248 Z"/><path d="M192,230 Q202,235 205,248 L192,248 Z"/><path d="M120,162 Q112,148 115,135 Q125,125 140,124 Q155,125 165,135 Q168,148 160,162 Z"/><circle cx="140" cy="118" r="14"/><path d="M126,124 Q118,112 116,100 L108,92 Q104,88 108,84 Q112,80 116,84 L122,90 Q130,85 140,84 Q150,85 158,90 L164,84 Q168,80 172,84 Q176,88 172,92 L164,100 Q162,112 154,124 Z"/></g>
-      <text x="140" y="358" text-anchor="middle" font-family="'Bebas Neue', sans-serif" font-size="38" fill="#ffffff" letter-spacing="4">FIFA</text>
-      <text x="140" y="375" text-anchor="middle" font-family="'Inter', sans-serif" font-size="8" fill="#b0b8c8" letter-spacing="2">CANADA · MEXICO · USA</text>
-    </svg>
-    <div class="section-brand-divider"></div>
-    <div class="section-brand-text">
-      <span class="section-label">GROUP STAGE</span>
-      <h2 class="section-title" id="groups-heading">THE <em>DRAW</em></h2>
-    </div>
-  </div>
+        <!-- Groups Preview -->
+        <section class="groups-section">
+            <h3>⚽ Group Stage Preview</h3>
+            <div class="groups-grid">
 
-  <div class="groups-grid" id="groups-grid">
-    <!-- Group A -->
-    <div class="group-card fade-up">
-      <div class="group-header">
-        <span class="group-letter">A</span>
-        <span class="group-badge">GROUP A</span>
-      </div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇺🇸</span><span class="team-name">USA</span><span class="team-pts">6</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🏴󠁧󠁢󠁥󠁮󠁧󠁿</span><span class="team-name">England</span><span class="team-pts">4</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇮🇷</span><span class="team-name">Iran</span><span class="team-pts">3</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🏴󠁧󠁢󠁷󠁬󠁳󠁿</span><span class="team-name">Wales</span><span class="team-pts">0</span></div>
-    </div>
-    <!-- Group B -->
-    <div class="group-card fade-up">
-      <div class="group-header">
-        <span class="group-letter">B</span>
-        <span class="group-badge">GROUP B</span>
-      </div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇦🇷</span><span class="team-name">Argentina</span><span class="team-pts">9</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇲🇽</span><span class="team-name">Mexico</span><span class="team-pts">4</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇵🇱</span><span class="team-name">Poland</span><span class="team-pts">3</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇸🇦</span><span class="team-name">Saudi Arabia</span><span class="team-pts">1</span></div>
-    </div>
-    <!-- Group C -->
-    <div class="group-card fade-up">
-      <div class="group-header">
-        <span class="group-letter">C</span>
-        <span class="group-badge">GROUP C</span>
-      </div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇫🇷</span><span class="team-name">France</span><span class="team-pts">7</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇩🇰</span><span class="team-name">Denmark</span><span class="team-pts">5</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇹🇳</span><span class="team-name">Tunisia</span><span class="team-pts">2</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇦🇺</span><span class="team-name">Australia</span><span class="team-pts">1</span></div>
-    </div>
-    <!-- Group D -->
-    <div class="group-card fade-up">
-      <div class="group-header">
-        <span class="group-letter">D</span>
-        <span class="group-badge">GROUP D</span>
-      </div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇧🇷</span><span class="team-name">Brazil</span><span class="team-pts">9</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇨🇭</span><span class="team-name">Switzerland</span><span class="team-pts">4</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇨🇲</span><span class="team-name">Cameroon</span><span class="team-pts">3</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇷🇸</span><span class="team-name">Serbia</span><span class="team-pts">0</span></div>
-    </div>
-    <!-- Group E -->
-    <div class="group-card fade-up">
-      <div class="group-header">
-        <span class="group-letter">E</span>
-        <span class="group-badge">GROUP E</span>
-      </div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇪🇸</span><span class="team-name">Spain</span><span class="team-pts">7</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇯🇵</span><span class="team-name">Japan</span><span class="team-pts">6</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇩🇪</span><span class="team-name">Germany</span><span class="team-pts">3</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇨🇷</span><span class="team-name">Costa Rica</span><span class="team-pts">0</span></div>
-    </div>
-    <!-- Group F -->
-    <div class="group-card fade-up">
-      <div class="group-header">
-        <span class="group-letter">F</span>
-        <span class="group-badge">GROUP F</span>
-      </div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇧🇪</span><span class="team-name">Belgium</span><span class="team-pts">6</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇨🇦</span><span class="team-name">Canada</span><span class="team-pts">4</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇭🇷</span><span class="team-name">Croatia</span><span class="team-pts">4</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇲🇦</span><span class="team-name">Morocco</span><span class="team-pts">3</span></div>
-    </div>
-    <!-- Group G — hidden initially -->
-    <div class="group-card fade-up hidden-group">
-      <div class="group-header">
-        <span class="group-letter">G</span>
-        <span class="group-badge">GROUP G</span>
-      </div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇳🇱</span><span class="team-name">Netherlands</span><span class="team-pts">7</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇪🇨</span><span class="team-name">Ecuador</span><span class="team-pts">4</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇸🇳</span><span class="team-name">Senegal</span><span class="team-pts">3</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇶🇦</span><span class="team-name">Qatar</span><span class="team-pts">0</span></div>
-    </div>
-    <!-- Group H -->
-    <div class="group-card fade-up hidden-group">
-      <div class="group-header">
-        <span class="group-letter">H</span>
-        <span class="group-badge">GROUP H</span>
-      </div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇵🇹</span><span class="team-name">Portugal</span><span class="team-pts">9</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇺🇾</span><span class="team-name">Uruguay</span><span class="team-pts">5</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇬🇭</span><span class="team-name">Ghana</span><span class="team-pts">1</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇰🇷</span><span class="team-name">South Korea</span><span class="team-pts">1</span></div>
-    </div>
-    <!-- Group I -->
-    <div class="group-card fade-up hidden-group">
-      <div class="group-header">
-        <span class="group-letter">I</span>
-        <span class="group-badge">GROUP I</span>
-      </div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇵🇾</span><span class="team-name">Paraguay</span><span class="team-pts">7</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇳🇬</span><span class="team-name">Nigeria</span><span class="team-pts">5</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇦🇹</span><span class="team-name">Austria</span><span class="team-pts">3</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇸🇦</span><span class="team-name">Iraq</span><span class="team-pts">0</span></div>
-    </div>
-    <!-- Group J -->
-    <div class="group-card fade-up hidden-group">
-      <div class="group-header">
-        <span class="group-letter">J</span>
-        <span class="group-badge">GROUP J</span>
-      </div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇮🇹</span><span class="team-name">Italy</span><span class="team-pts">7</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇲🇽</span><span class="team-name">Colombia</span><span class="team-pts">5</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇨🇱</span><span class="team-name">Chile</span><span class="team-pts">2</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇿🇦</span><span class="team-name">South Africa</span><span class="team-pts">1</span></div>
-    </div>
-    <!-- Group K -->
-    <div class="group-card fade-up hidden-group">
-      <div class="group-header">
-        <span class="group-letter">K</span>
-        <span class="group-badge">GROUP K</span>
-      </div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇹🇷</span><span class="team-name">Türkiye</span><span class="team-pts">7</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇲🇦</span><span class="team-name">Algeria</span><span class="team-pts">4</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇷🇴</span><span class="team-name">Romania</span><span class="team-pts">3</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇳🇿</span><span class="team-name">New Zealand</span><span class="team-pts">0</span></div>
-    </div>
-    <!-- Group L -->
-    <div class="group-card fade-up hidden-group">
-      <div class="group-header">
-        <span class="group-letter">L</span>
-        <span class="group-badge">GROUP L</span>
-      </div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇲🇽</span><span class="team-name">Mexico</span><span class="team-pts">6</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇺🇦</span><span class="team-name">Ukraine</span><span class="team-pts">5</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇨🇮</span><span class="team-name">Côte d'Ivoire</span><span class="team-pts">2</span></div>
-      <div class="group-team"><span class="team-flag" aria-hidden="true">🇯🇲</span><span class="team-name">Jamaica</span><span class="team-pts">1</span></div>
-    </div>
-  </div>
+                <div class="group-card">
+                    <h4>Group A</h4>
+                    <div class="team"><span class="tf">🇺🇸</span> United States</div>
+                    <div class="team"><span class="tf">🇩🇪</span> Germany</div>
+                    <div class="team"><span class="tf">🇯🇵</span> Japan</div>
+                </div>
 
-  <button class="groups-toggle" id="groups-toggle" onclick="toggleGroups()" aria-expanded="false">VIEW ALL 12 GROUPS ↓</button>
-</section>
+                <div class="group-card">
+                    <h4>Group B</h4>
+                    <div class="team"><span class="tf">🇧🇷</span> Brazil</div>
+                    <div class="team"><span class="tf">🇫🇷</span> France</div>
+                    <div class="team"><span class="tf">🇲🇽</span> Mexico</div>
+                </div>
 
-<!-- ============================================================
-     PLAYERS SECTION
-     ============================================================ -->
-<section id="players" class="players-section" aria-labelledby="players-heading">
-  <!-- LOGO PLACEMENT 7: PLAYERS HEADER -->
-  <div class="section-brand-row fade-left">
-    <svg class="logo-section" viewBox="0 0 280 380" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <defs>
-        <linearGradient id="goldGrad-p" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#f5d675"/>
-          <stop offset="50%" stop-color="#c9a227"/>
-          <stop offset="100%" stop-color="#a07a10"/>
-        </linearGradient>
-        <radialGradient id="trophyGrad-p" cx="50%" cy="40%" r="55%">
-          <stop offset="0%" stop-color="#f5e88a"/>
-          <stop offset="100%" stop-color="#c9a227"/>
-        </radialGradient>
-        <filter id="ts-p"><feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#c9a227" flood-opacity="0.7"/></filter>
-      </defs>
-      <rect width="280" height="380" fill="#0a1628" rx="4"/>
-      <rect width="280" height="380" fill="none" stroke="#c9a227" stroke-width="2" rx="4"/>
-      <g fill="url(#goldGrad-p)"><rect x="70" y="28" width="140" height="18" rx="4"/><rect x="172" y="28" width="38" height="80" rx="4"/><rect x="70" y="90" width="140" height="18" rx="4"/><rect x="70" y="108" width="38" height="80" rx="4"/><rect x="70" y="170" width="140" height="18" rx="4"/></g>
-      <g fill="url(#goldGrad-p)"><rect x="70" y="198" width="140" height="18" rx="4"/><rect x="70" y="216" width="38" height="80" rx="4"/><rect x="70" y="278" width="140" height="18" rx="4"/><rect x="172" y="278" width="38" height="58" rx="4"/><rect x="70" y="318" width="140" height="18" rx="4"/><rect x="70" y="258" width="140" height="18" rx="4"/></g>
-      <g filter="url(#ts-p)" fill="url(#trophyGrad-p)"><rect x="118" y="318" width="44" height="22" rx="3"/><rect x="108" y="308" width="64" height="14" rx="2"/><rect x="122" y="250" width="36" height="62" rx="4"/><path d="M100,180 Q85,200 88,230 Q92,250 122,252 L158,252 Q188,250 192,230 Q195,200 180,180 Q165,165 140,162 Q115,165 100,180 Z"/><path d="M88,230 Q78,235 75,248 L88,248 Z"/><path d="M192,230 Q202,235 205,248 L192,248 Z"/><path d="M120,162 Q112,148 115,135 Q125,125 140,124 Q155,125 165,135 Q168,148 160,162 Z"/><circle cx="140" cy="118" r="14"/><path d="M126,124 Q118,112 116,100 L108,92 Q104,88 108,84 Q112,80 116,84 L122,90 Q130,85 140,84 Q150,85 158,90 L164,84 Q168,80 172,84 Q176,88 172,92 L164,100 Q162,112 154,124 Z"/></g>
-      <text x="140" y="358" text-anchor="middle" font-family="'Bebas Neue', sans-serif" font-size="38" fill="#ffffff" letter-spacing="4">FIFA</text>
-      <text x="140" y="375" text-anchor="middle" font-family="'Inter', sans-serif" font-size="8" fill="#b0b8c8" letter-spacing="2">CANADA · MEXICO · USA</text>
-    </svg>
-    <div class="section-brand-divider"></div>
-    <div class="section-brand-text">
-      <span class="section-label">PLAYER SPOTLIGHT</span>
-      <h2 class="section-title" id="players-heading">WORLD <em>STARS</em></h2>
-    </div>
-  </div>
-  <p class="section-subtext">The legends who will define the tournament. 48 nations, one trophy.</p>
+                <div class="group-card">
+                    <h4>Group C</h4>
+                    <div class="team"><span class="tf">🇦🇷</span> Argentina</div>
+                    <div class="team"><span class="tf">🏴󠁧󠁢󠁥󠁮󠁧󠁿</span> England</div>
+                    <div class="team"><span class="tf">🇨🇦</span> Canada</div>
+                </div>
 
-  <div class="players-grid">
+                <div class="group-card">
+                    <h4>Group D</h4>
+                    <div class="team"><span class="tf">🇪🇸</span> Spain</div>
+                    <div class="team"><span class="tf">🇵🇹</span> Portugal</div>
+                    <div class="team"><span class="tf">🇲🇦</span> Morocco</div>
+                </div>
 
-    <!-- 1. MBAPPÉ — France -->
-    <div class="player-card fade-up">
-      <div class="player-jersey-zone">
-        <svg class="player-jersey-bg" viewBox="0 0 200 160" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-          <rect width="200" height="160" fill="#00209F" opacity="0.18"/>
-        </svg>
-        <span class="jersey-ghost-num" aria-hidden="true">10</span>
-        <svg class="player-jersey-svg" viewBox="0 0 100 120" aria-hidden="true">
-          <defs>
-            <linearGradient id="fr-body" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#0033A0"/>
-              <stop offset="100%" stop-color="#001F6B"/>
-            </linearGradient>
-          </defs>
-          <!-- Body -->
-          <path d="M20,30 L10,55 L18,57 L18,105 L82,105 L82,57 L90,55 L80,30 Q70,20 62,22 Q58,36 50,38 Q42,36 38,22 Q30,20 20,30 Z" fill="url(#fr-body)" stroke="#001050" stroke-width="0.5"/>
-          <!-- Collar red -->
-          <path d="M38,22 Q42,30 50,32 Q58,30 62,22 Q56,18 50,18 Q44,18 38,22 Z" fill="#ED2939"/>
-          <!-- Sleeve cuffs -->
-          <rect x="10" y="50" width="8" height="6" rx="1" fill="#ED2939"/>
-          <rect x="82" y="50" width="8" height="6" rx="1" fill="#ED2939"/>
-          <!-- Number -->
-          <text x="50" y="80" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="22" font-weight="900" fill="white" opacity="0.95">10</text>
-          <!-- Name bar -->
-          <rect x="22" y="87" width="56" height="12" rx="2" fill="rgba(255,255,255,0.12)"/>
-          <text x="50" y="97" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="white" letter-spacing="1.5">MBAPPÉ</text>
-        </svg>
-      </div>
-      <div class="player-info">
-        <div class="player-name">Kylian Mbappé</div>
-        <div class="player-nation"><span aria-hidden="true">🇫🇷</span> France</div>
-        <div class="player-stat-row">
-          <span class="player-stat-num">46</span>
-          <span class="player-stat-label">International Goals</span>
-        </div>
-      </div>
+                <div class="group-card">
+                    <h4>Group E</h4>
+                    <div class="team"><span class="tf">🇳🇱</span> Netherlands</div>
+                    <div class="team"><span class="tf">🇸🇳</span> Senegal</div>
+                    <div class="team"><span class="tf">🇦🇺</span> Australia</div>
+                </div>
+
+                <div class="group-card">
+                    <h4>Group F</h4>
+                    <div class="team"><span class="tf">🇧🇪</span> Belgium</div>
+                    <div class="team"><span class="tf">🇨🇷</span> Croatia</div>
+                    <div class="team"><span class="tf">🇨🇴</span> Colombia</div>
+                </div>
+
+                <div class="group-card">
+                    <h4>Group G</h4>
+                    <div class="team"><span class="tf">🇮🇹</span> Italy</div>
+                    <div class="team"><span class="tf">🇺🇾</span> Uruguay</div>
+                    <div class="team"><span class="tf">🇰🇷</span> South Korea</div>
+                </div>
+
+                <div class="group-card">
+                    <h4>Group H</h4>
+                    <div class="team"><span class="tf">🇨🇭</span> Switzerland</div>
+                    <div class="team"><span class="tf">🇷🇸</span> Serbia</div>
+                    <div class="team"><span class="tf">🇨🇮</span> Ivory Coast</div>
+                </div>
+
+            </div>
+        </section>
+
+        <footer>
+            <p>© 2026 FIFA World Cup™ — USA · Canada · Mexico</p>
+            <p style="margin-top:6px;">The Greatest Show on Earth ⚽</p>
+        </footer>
+
     </div>
 
-    <!-- 2. HAALAND — Norway -->
-    <div class="player-card fade-up">
-      <div class="player-jersey-zone">
-        <svg class="player-jersey-bg" viewBox="0 0 200 160" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-          <rect width="200" height="160" fill="#EF2B2D" opacity="0.18"/>
-        </svg>
-        <span class="jersey-ghost-num" aria-hidden="true">9</span>
-        <svg class="player-jersey-svg" viewBox="0 0 100 120" aria-hidden="true">
-          <defs>
-            <linearGradient id="nor-body" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#EF2B2D"/>
-              <stop offset="100%" stop-color="#C0111A"/>
-            </linearGradient>
-          </defs>
-          <path d="M20,30 L10,55 L18,57 L18,105 L82,105 L82,57 L90,55 L80,30 Q70,20 62,22 Q58,36 50,38 Q42,36 38,22 Q30,20 20,30 Z" fill="url(#nor-body)" stroke="#9E0E15" stroke-width="0.5"/>
-          <!-- White round collar -->
-          <path d="M38,22 Q42,30 50,32 Q58,30 62,22 Q56,18 50,18 Q44,18 38,22 Z" fill="#ffffff"/>
-          <!-- Nordic cross subtle -->
-          <rect x="42" y="48" width="16" height="3" rx="1" fill="rgba(255,255,255,0.15)"/>
-          <rect x="49" y="42" width="3" height="15" rx="1" fill="rgba(255,255,255,0.15)"/>
-          <!-- Number -->
-          <text x="50" y="80" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="22" font-weight="900" fill="white" opacity="0.95">9</text>
-          <rect x="22" y="87" width="56" height="12" rx="2" fill="rgba(255,255,255,0.12)"/>
-          <text x="50" y="97" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="white" letter-spacing="1.5">HAALAND</text>
-        </svg>
-      </div>
-      <div class="player-info">
-        <div class="player-name">Erling Haaland</div>
-        <div class="player-nation"><span aria-hidden="true">🇳🇴</span> Norway</div>
-        <div class="player-stat-row">
-          <span class="player-stat-num">34</span>
-          <span class="player-stat-label">International Goals</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- 3. VINÍCIUS JR. — Brazil -->
-    <div class="player-card fade-up">
-      <div class="player-jersey-zone">
-        <svg class="player-jersey-bg" viewBox="0 0 200 160" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-          <rect width="200" height="160" fill="#009C3B" opacity="0.18"/>
-        </svg>
-        <span class="jersey-ghost-num" aria-hidden="true">11</span>
-        <svg class="player-jersey-svg" viewBox="0 0 100 120" aria-hidden="true">
-          <defs>
-            <linearGradient id="bra-body" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#F5E225"/>
-              <stop offset="100%" stop-color="#E8C800"/>
-            </linearGradient>
-          </defs>
-          <path d="M20,30 L10,55 L18,57 L18,105 L82,105 L82,57 L90,55 L80,30 Q70,20 62,22 Q58,36 50,38 Q42,36 38,22 Q30,20 20,30 Z" fill="url(#bra-body)" stroke="#C8A800" stroke-width="0.5"/>
-          <!-- Green collar -->
-          <path d="M38,22 Q42,30 50,32 Q58,30 62,22 Q56,18 50,18 Q44,18 38,22 Z" fill="#009C3B"/>
-          <!-- Blue yoke stripe -->
-          <rect x="18" y="42" width="64" height="10" rx="0" fill="#002776" opacity="0.22"/>
-          <!-- Number navy -->
-          <text x="50" y="80" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="22" font-weight="900" fill="#002776" opacity="0.95">11</text>
-          <rect x="22" y="87" width="56" height="12" rx="2" fill="rgba(0,39,118,0.18)"/>
-          <text x="50" y="97" text-anchor="middle" font-family="Arial, sans-serif" font-size="6.5" fill="#002776" letter-spacing="1">VINÍCIUS JR.</text>
-        </svg>
-      </div>
-      <div class="player-info">
-        <div class="player-name">Vinícius Jr.</div>
-        <div class="player-nation"><span aria-hidden="true">🇧🇷</span> Brazil</div>
-        <div class="player-stat-row">
-          <span class="player-stat-num">26</span>
-          <span class="player-stat-label">International Goals</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- 4. PEDRI — Spain -->
-    <div class="player-card fade-up">
-      <div class="player-jersey-zone">
-        <svg class="player-jersey-bg" viewBox="0 0 200 160" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-          <rect width="200" height="160" fill="#AA151B" opacity="0.18"/>
-        </svg>
-        <span class="jersey-ghost-num" aria-hidden="true">8</span>
-        <svg class="player-jersey-svg" viewBox="0 0 100 120" aria-hidden="true">
-          <defs>
-            <linearGradient id="esp-body" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#AA151B"/>
-              <stop offset="100%" stop-color="#8B0F14"/>
-            </linearGradient>
-          </defs>
-          <path d="M20,30 L10,55 L18,57 L18,105 L82,105 L82,57 L90,55 L80,30 Q70,20 62,22 Q58,36 50,38 Q42,36 38,22 Q30,20 20,30 Z" fill="url(#esp-body)" stroke="#6E0A0F" stroke-width="0.5"/>
-          <!-- Gold collar -->
-          <path d="M38,22 Q42,30 50,32 Q58,30 62,22 Q56,18 50,18 Q44,18 38,22 Z" fill="#F1BF00"/>
-          <!-- Gold waist band -->
-          <rect x="18" y="93" width="64" height="4" rx="1" fill="#F1BF00" opacity="0.45"/>
-          <!-- Number -->
-          <text x="50" y="80" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="22" font-weight="900" fill="white" opacity="0.95">8</text>
-          <rect x="22" y="87" width="56" height="12" rx="2" fill="rgba(255,255,255,0.12)"/>
-          <text x="50" y="97" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="white" letter-spacing="1.5">PEDRI</text>
-        </svg>
-      </div>
-      <div class="player-info">
-        <div class="player-name">Pedri</div>
-        <div class="player-nation"><span aria-hidden="true">🇪🇸</span> Spain</div>
-        <div class="player-stat-row">
-          <span class="player-stat-num">16</span>
-          <span class="player-stat-label">International Goals</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- 5. SAKA — England -->
-    <div class="player-card fade-up">
-      <div class="player-jersey-zone">
-        <svg class="player-jersey-bg" viewBox="0 0 200 160" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-          <rect width="200" height="160" fill="#003399" opacity="0.18"/>
-        </svg>
-        <span class="jersey-ghost-num" aria-hidden="true">7</span>
-        <svg class="player-jersey-svg" viewBox="0 0 100 120" aria-hidden="true">
-          <defs>
-            <linearGradient id="eng-body" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#F8F8F8"/>
-              <stop offset="100%" stop-color="#E8E8E8"/>
-            </linearGradient>
-          </defs>
-          <path d="M20,30 L10,55 L18,57 L18,105 L82,105 L82,57 L90,55 L80,30 Q70,20 62,22 Q58,36 50,38 Q42,36 38,22 Q30,20 20,30 Z" fill="url(#eng-body)" stroke="#D0D0D0" stroke-width="0.5"/>
-          <!-- Navy collar -->
-          <path d="M38,22 Q42,30 50,32 Q58,30 62,22 Q56,18 50,18 Q44,18 38,22 Z" fill="#003399"/>
-          <!-- St George cross -->
-          <rect x="40" y="48" width="20" height="3" rx="0.5" fill="#CF081F" opacity="0.65"/>
-          <rect x="49" y="43" width="3" height="14" rx="0.5" fill="#CF081F" opacity="0.65"/>
-          <!-- Number navy -->
-          <text x="50" y="80" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="22" font-weight="900" fill="#003399" opacity="0.95">7</text>
-          <rect x="22" y="87" width="56" height="12" rx="2" fill="rgba(0,51,153,0.12)"/>
-          <text x="50" y="97" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#003399" letter-spacing="1.5">SAKA</text>
-        </svg>
-      </div>
-      <div class="player-info">
-        <div class="player-name">Bukayo Saka</div>
-        <div class="player-nation"><span aria-hidden="true">🏴󠁧󠁢󠁥󠁮󠁧󠁿</span> England</div>
-        <div class="player-stat-row">
-          <span class="player-stat-num">22</span>
-          <span class="player-stat-label">International Goals</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- 6. BELLINGHAM — England -->
-    <div class="player-card fade-up">
-      <div class="player-jersey-zone">
-        <svg class="player-jersey-bg" viewBox="0 0 200 160" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-          <rect width="200" height="160" fill="#003399" opacity="0.15"/>
-        </svg>
-        <span class="jersey-ghost-num" aria-hidden="true">10</span>
-        <svg class="player-jersey-svg" viewBox="0 0 100 120" aria-hidden="true">
-          <defs>
-            <linearGradient id="eng2-body" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#FFFFFF"/>
-              <stop offset="100%" stop-color="#ECECEC"/>
-            </linearGradient>
-          </defs>
-          <path d="M20,30 L10,55 L18,57 L18,105 L82,105 L82,57 L90,55 L80,30 Q70,20 62,22 Q58,36 50,38 Q42,36 38,22 Q30,20 20,30 Z" fill="url(#eng2-body)" stroke="#D0D0D0" stroke-width="0.5"/>
-          <!-- Side panels -->
-          <path d="M10,55 L18,57 L18,105 L10,105 Z" fill="#003399" opacity="0.15"/>
-          <path d="M90,55 L82,57 L82,105 L90,105 Z" fill="#003399" opacity="0.15"/>
-          <!-- Navy collar with gold stroke -->
-          <path d="M38,22 Q42,30 50,32 Q58,30 62,22 Q56,18 50,18 Q44,18 38,22 Z" fill="#003399" stroke="#C9A227" stroke-width="0.8"/>
-          <!-- St George cross -->
-          <rect x="40" y="48" width="20" height="3" rx="0.5" fill="#CF081F" opacity="0.65"/>
-          <rect x="49" y="43" width="3" height="14" rx="0.5" fill="#CF081F" opacity="0.65"/>
-          <!-- Number navy -->
-          <text x="50" y="80" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="22" font-weight="900" fill="#003399" opacity="0.95">10</text>
-          <rect x="22" y="87" width="56" height="12" rx="2" fill="rgba(0,51,153,0.12)"/>
-          <text x="50" y="97" text-anchor="middle" font-family="Arial, sans-serif" font-size="6" fill="#003399" letter-spacing="1">BELLINGHAM</text>
-        </svg>
-      </div>
-      <div class="player-info">
-        <div class="player-name">Jude Bellingham</div>
-        <div class="player-nation"><span aria-hidden="true">🏴󠁧󠁢󠁥󠁮󠁧󠁿</span> England</div>
-        <div class="player-stat-row">
-          <span class="player-stat-num">19</span>
-          <span class="player-stat-label">International Goals</span>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<!-- ============================================================
-     TOURNAMENT TIMELINE
-     ============================================================ -->
-<section id="schedule" class="schedule-section" aria-labelledby="schedule-heading">
-  <!-- LOGO PLACEMENT 8: SCHEDULE HEADER -->
-  <div class="section-brand-row fade-left">
-    <svg class="logo-section" viewBox="0 0 280 380" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <defs>
-        <linearGradient id="goldGrad-s" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#f5d675"/>
-          <stop offset="50%" stop-color="#c9a227"/>
-          <stop offset="100%" stop-color="#a07a10"/>
-        </linearGradient>
-        <radialGradient id="trophyGrad-s" cx="50%" cy="40%" r="55%">
-          <stop offset="0%" stop-color="#f5e88a"/>
-          <stop offset="100%" stop-color="#c9a227"/>
-        </radialGradient>
-        <filter id="ts-s"><feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#c9a227" flood-opacity="0.7"/></filter>
-      </defs>
-      <rect width="280" height="380" fill="#0a1628" rx="4"/>
-      <rect width="280" height="380" fill="none" stroke="#c9a227" stroke-width="2" rx="4"/>
-      <g fill="url(#goldGrad-s)"><rect x="70" y="28" width="140" height="18" rx="4"/><rect x="172" y="28" width="38" height="80" rx="4"/><rect x="70" y="90" width="140" height="18" rx="4"/><rect x="70" y="108" width="38" height="80" rx="4"/><rect x="70" y="170" width="140" height="18" rx="4"/></g>
-      <g fill="url(#goldGrad-s)"><rect x="70" y="198" width="140" height="18" rx="4"/><rect x="70" y="216" width="38" height="80" rx="4"/><rect x="70" y="278" width="140" height="18" rx="4"/><rect x="172" y="278" width="38" height="58" rx="4"/><rect x="70" y="318" width="140" height="18" rx="4"/><rect x="70" y="258" width="140" height="18" rx="4"/></g>
-      <g filter="url(#ts-s)" fill="url(#trophyGrad-s)"><rect x="118" y="318" width="44" height="22" rx="3"/><rect x="108" y="308" width="64" height="14" rx="2"/><rect x="122" y="250" width="36" height="62" rx="4"/><path d="M100,180 Q85,200 88,230 Q92,250 122,252 L158,252 Q188,250 192,230 Q195,200 180,180 Q165,165 140,162 Q115,165 100,180 Z"/><path d="M88,230 Q78,235 75,248 L88,248 Z"/><path d="M192,230 Q202,235 205,248 L192,248 Z"/><path d="M120,162 Q112,148 115,135 Q125,125 140,124 Q155,125 165,135 Q168,148 160,162 Z"/><circle cx="140" cy="118" r="14"/><path d="M126,124 Q118,112 116,100 L108,92 Q104,88 108,84 Q112,80 116,84 L122,90 Q130,85 140,84 Q150,85 158,90 L164,84 Q168,80 172,84 Q176,88 172,92 L164,100 Q162,112 154,124 Z"/></g>
-      <text x="140" y="358" text-anchor="middle" font-family="'Bebas Neue', sans-serif" font-size="38" fill="#ffffff" letter-spacing="4">FIFA</text>
-      <text x="140" y="375" text-anchor="middle" font-family="'Inter', sans-serif" font-size="8" fill="#b0b8c8" letter-spacing="2">CANADA · MEXICO · USA</text>
-    </svg>
-    <div class="section-brand-divider"></div>
-    <div class="section-brand-text">
-      <span class="section-label">TOURNAMENT TIMELINE</span>
-      <h2 class="section-title" id="schedule-heading">ROAD TO <em>GLORY</em></h2>
-    </div>
-  </div>
-
-  <div class="timeline">
-    <div class="t-event">
-      <div class="t-dot" aria-hidden="true"></div>
-      <div class="t-date">June 11, 2026</div>
-      <div class="t-title">Opening Match</div>
-      <div class="t-desc">Estadio Azteca, Mexico City — the tournament kicks off in front of 87,523 fans.</div>
-    </div>
-    <div class="t-event">
-      <div class="t-dot" aria-hidden="true"></div>
-      <div class="t-date">June 11 – July 2, 2026</div>
-      <div class="t-title">Group Stage</div>
-      <div class="t-desc">48 nations, 12 groups, 64 matches across USA, Canada, and Mexico.</div>
-    </div>
-    <div class="t-event">
-      <div class="t-dot" aria-hidden="true"></div>
-      <div class="t-date">July 4–9, 2026</div>
-      <div class="t-title">Round of 32</div>
-      <div class="t-desc">The knockout stage begins — every match now must-win. No second chances.</div>
-    </div>
-    <div class="t-event">
-      <div class="t-dot" aria-hidden="true"></div>
-      <div class="t-date">July 11–14, 2026</div>
-      <div class="t-title">Round of 16 &amp; Quarter-Finals</div>
-      <div class="t-desc">16 giants collide. Only 8 teams advance to fight for the trophy.</div>
-    </div>
-    <div class="t-event">
-      <div class="t-dot" aria-hidden="true"></div>
-      <div class="t-date">July 18–19, 2026</div>
-      <div class="t-title">Semi-Finals</div>
-      <div class="t-desc">New York and Los Angeles host the last four nations standing.</div>
-    </div>
-    <div class="t-event">
-      <div class="t-dot" aria-hidden="true"></div>
-      <div class="t-date">July 22, 2026</div>
-      <div class="t-title">Third Place Play-off</div>
-      <div class="t-desc">Two fallen giants compete for the bronze medal and lasting legacy.</div>
-    </div>
-    <div class="t-event">
-      <div class="t-dot" aria-hidden="true"></div>
-      <div class="t-date">July 23, 2026 🏆</div>
-      <div class="t-title">THE FINAL</div>
-      <div class="t-desc">MetLife Stadium, New Jersey — the world watches as history is made.</div>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================
-     MATCH PREDICTOR
-     ============================================================ -->
-<section id="predictor" class="predictor-section" aria-labelledby="predictor-heading">
-  <div class="section-brand-row fade-left" style="justify-content:center;">
-    <div class="section-brand-text" style="align-items:center;">
-      <span class="section-label">INTERACTIVE</span>
-      <h2 class="section-title" id="predictor-heading">WHO WINS <em>TODAY?</em></h2>
-    </div>
-  </div>
-
-  <div class="predictor-card fade-up">
-    <!-- LOGO PLACEMENT 9: PREDICTOR CARD -->
-    <div class="predictor-logo-wrap">
-      <svg class="logo-stamp" viewBox="0 0 280 380" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <defs>
-          <linearGradient id="goldGrad-pred" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#f5d675"/>
-            <stop offset="50%" stop-color="#c9a227"/>
-            <stop offset="100%" stop-color="#a07a10"/>
-          </linearGradient>
-          <radialGradient id="trophyGrad-pred" cx="50%" cy="40%" r="55%">
-            <stop offset="0%" stop-color="#f5e88a"/>
-            <stop offset="100%" stop-color="#c9a227"/>
-          </radialGradient>
-          <filter id="ts-pred"><feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#c9a227" flood-opacity="0.7"/></filter>
-        </defs>
-        <rect width="280" height="380" fill="#0a1628" rx="4"/>
-        <rect width="280" height="380" fill="none" stroke="#c9a227" stroke-width="2" rx="4"/>
-        <g fill="url(#goldGrad-pred)"><rect x="70" y="28" width="140" height="18" rx="4"/><rect x="172" y="28" width="38" height="80" rx="4"/><rect x="70" y="90" width="140" height="18" rx="4"/><rect x="70" y="108" width="38" height="80" rx="4"/><rect x="70" y="170" width="140" height="18" rx="4"/></g>
-        <g fill="url(#goldGrad-pred)"><rect x="70" y="198" width="140" height="18" rx="4"/><rect x="70" y="216" width="38" height="80" rx="4"/><rect x="70" y="278" width="140" height="18" rx="4"/><rect x="172" y="278" width="38" height="58" rx="4"/><rect x="70" y="318" width="140" height="18" rx="4"/><rect x="70" y="258" width="140" height="18" rx="4"/></g>
-        <g filter="url(#ts-pred)" fill="url(#trophyGrad-pred)"><rect x="118" y="318" width="44" height="22" rx="3"/><rect x="108" y="308" width="64" height="14" rx="2"/><rect x="122" y="250" width="36" height="62" rx="4"/><path d="M100,180 Q85,200 88,230 Q92,250 122,252 L158,252 Q188,250 192,230 Q195,200 180,180 Q165,165 140,162 Q115,165 100,180 Z"/><path d="M88,230 Q78,235 75,248 L88,248 Z"/><path d="M192,230 Q202,235 205,248 L192,248 Z"/><path d="M120,162 Q112,148 115,135 Q125,125 140,124 Q155,125 165,135 Q168,148 160,162 Z"/><circle cx="140" cy="118" r="14"/><path d="M126,124 Q118,112 116,100 L108,92 Q104,88 108,84 Q112,80 116,84 L122,90 Q130,85 140,84 Q150,85 158,90 L164,84 Q168,80 172,84 Q176,88 172,92 L164,100 Q162,112 154,124 Z"/></g>
-        <text x="140" y="358" text-anchor="middle" font-family="'Bebas Neue', sans-serif" font-size="38" fill="#ffffff" letter-spacing="4">FIFA</text>
-        <text x="140" y="375" text-anchor="middle" font-family="'Inter', sans-serif" font-size="8" fill="#b0b8c8" letter-spacing="2">CANADA · MEXICO · USA</text>
-      </svg>
-    </div>
-
-    <div class="predictor-match">
-      <div class="predictor-team">
-        <span class="predictor-flag" aria-hidden="true">🇦🇷</span>
-        <span class="predictor-team-name">Argentina</span>
-      </div>
-      <span class="predictor-vs">VS</span>
-      <div class="predictor-team">
-        <span class="predictor-flag" aria-hidden="true">🇫🇷</span>
-        <span class="predictor-team-name">France</span>
-      </div>
-    </div>
-
-    <p class="predictor-instruction">Pick your predicted score:</p>
-
-    <div class="score-buttons" role="radiogroup" aria-label="Select a predicted score">
-      <button class="score-btn" role="radio" aria-pressed="false" onclick="pickScore(this,'1-0')">1–0</button>
-      <button class="score-btn" role="radio" aria-pressed="false" onclick="pickScore(this,'2-0')">2–0</button>
-      <button class="score-btn" role="radio" aria-pressed="false" onclick="pickScore(this,'1-1')">1–1</button>
-      <button class="score-btn" role="radio" aria-pressed="false" onclick="pickScore(this,'2-1')">2–1</button>
-      <button class="score-btn" role="radio" aria-pressed="false" onclick="pickScore(this,'0-1')">0–1</button>
-      <button class="score-btn" role="radio" aria-pressed="false" onclick="pickScore(this,'0-2')">0–2</button>
-      <button class="score-btn" role="radio" aria-pressed="false" onclick="pickScore(this,'3-1')">3–1</button>
-      <button class="score-btn" role="radio" aria-pressed="false" onclick="pickScore(this,'1-3')">1–3</button>
-    </div>
-
-    <button class="btn-submit" id="submit-btn" onclick="submitPrediction()" aria-label="Lock in your match prediction">LOCK IN PREDICTION</button>
-    <p id="predict-result" role="status" aria-live="polite"></p>
-  </div>
-</section>
-
-<!-- ============================================================
-     FOOTER
-     ============================================================ -->
-<footer role="contentinfo">
-  <!-- LOGO PLACEMENT 10: FOOTER -->
-  <div class="footer-logo-wrap">
-    <svg class="logo-footer" viewBox="0 0 280 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="FIFA World Cup 2026">
-      <defs>
-        <linearGradient id="goldGrad-footer" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#f5d675"/>
-          <stop offset="50%" stop-color="#c9a227"/>
-          <stop offset="100%" stop-color="#a07a10"/>
-        </linearGradient>
-        <radialGradient id="trophyGrad-footer" cx="50%" cy="40%" r="55%">
-          <stop offset="0%" stop-color="#f5e88a"/>
-          <stop offset="100%" stop-color="#c9a227"/>
-        </radialGradient>
-        <filter id="ts-footer">
-          <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#c9a227" flood-opacity="0.7"/>
-        </filter>
-      </defs>
-      <rect width="280" height="380" fill="#0a1628" rx="4"/>
-      <rect width="280" height="380" fill="none" stroke="#c9a227" stroke-width="2" rx="4"/>
-      <g fill="url(#goldGrad-footer)">
-        <rect x="70" y="28" width="140" height="18" rx="4"/>
-        <rect x="172" y="28" width="38" height="80" rx="4"/>
-        <rect x="70" y="90" width="140" height="18" rx="4"/>
-        <rect x="70" y="108" width="38" height="80" rx="4"/>
-        <rect x="70" y="170" width="140" height="18" rx="4"/>
-      </g>
-      <g fill="url(#goldGrad-footer)">
-        <rect x="70" y="198" width="140" height="18" rx="4"/>
-        <rect x="70" y="216" width="38" height="80" rx="4"/>
-        <rect x="70" y="278" width="140" height="18" rx="4"/>
-        <rect x="172" y="278" width="38" height="58" rx="4"/>
-        <rect x="70" y="318" width="140" height="18" rx="4"/>
-        <rect x="70" y="258" width="140" height="18" rx="4"/>
-      </g>
-      <g filter="url(#ts-footer)" fill="url(#trophyGrad-footer)">
-        <rect x="118" y="318" width="44" height="22" rx="3"/>
-        <rect x="108" y="308" width="64" height="14" rx="2"/>
-        <rect x="122" y="250" width="36" height="62" rx="4"/>
-        <path d="M100,180 Q85,200 88,230 Q92,250 122,252 L158,252 Q188,250 192,230 Q195,200 180,180 Q165,165 140,162 Q115,165 100,180 Z"/>
-        <path d="M88,230 Q78,235 75,248 L88,248 Z"/>
-        <path d="M192,230 Q202,235 205,248 L192,248 Z"/>
-        <path d="M120,162 Q112,148 115,135 Q125,125 140,124 Q155,125 165,135 Q168,148 160,162 Z"/>
-        <circle cx="140" cy="118" r="14"/>
-        <path d="M126,124 Q118,112 116,100 L108,92 Q104,88 108,84 Q112,80 116,84 L122,90 Q130,85 140,84 Q150,85 158,90 L164,84 Q168,80 172,84 Q176,88 172,92 L164,100 Q162,112 154,124 Z"/>
-      </g>
-      <text x="140" y="358" text-anchor="middle" font-family="'Bebas Neue', sans-serif" font-size="38" fill="#ffffff" letter-spacing="4">FIFA</text>
-      <text x="140" y="375" text-anchor="middle" font-family="'Inter', sans-serif" font-size="8" fill="#b0b8c8" letter-spacing="2">CANADA · MEXICO · USA</text>
-    </svg>
-  </div>
-
-  <ul class="footer-nav" role="list">
-    <li><a href="#venues" onclick="navTo(event,'venues')" aria-label="Go to Venues section">Venues</a></li>
-    <li><a href="#groups" onclick="navTo(event,'groups')" aria-label="Go to Groups section">Groups</a></li>
-    <li><a href="#players" onclick="navTo(event,'players')" aria-label="Go to Stars section">Stars</a></li>
-    <li><a href="#schedule" onclick="navTo(event,'schedule')" aria-label="Go to Schedule section">Schedule</a></li>
-    <li><a href="#predictor" onclick="navTo(event,'predictor')" aria-label="Go to Predictor section">Predictor</a></li>
-  </ul>
-
-  <div class="footer-flags" aria-label="Host nations flags">
-    <span aria-hidden="true">🇺🇸</span>
-    <span aria-hidden="true">🇨🇦</span>
-    <span aria-hidden="true">🇲🇽</span>
-  </div>
-
-  <p class="footer-copy">
-    © 2026 FIFA™ — This is a fan-made showcase for educational purposes.
-    FIFA™ and FIFA World Cup™ are registered trademarks of Fédération Internationale de Football Association.
-  </p>
-</footer>
-
-<!-- ============================================================
-     JAVASCRIPT
-     ============================================================ -->
-<script>
-/* ============================================================
-   NAV SCROLL BEHAVIOUR
-   ============================================================ */
-window.addEventListener('scroll', () => {
-  const nav = document.querySelector('nav');
-  if (window.scrollY > 50) {
-    nav.classList.add('scrolled');
-  } else {
-    nav.classList.remove('scrolled');
-  }
-}, { passive: true });
-
-/* ============================================================
-   navTo() — smooth scroll with nav + banner offset
-   ============================================================ */
-function navTo(e, sectionId) {
-  if (e && e.preventDefault) e.preventDefault();
-  const target = document.getElementById(sectionId);
-  if (!target) return;
-  const navHeight = document.querySelector('nav').offsetHeight; // 64px
-  const bannerHeight = 38; // fixed banner
-  const gap = 12;
-  const offset = navHeight + bannerHeight + gap;
-  const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
-  window.scrollTo({ top, behavior: 'smooth' });
-  // Immediately highlight the clicked link
-  document.querySelectorAll('.nav-links a, .mobile-menu a').forEach(a => {
-    a.classList.toggle('active', a.getAttribute('href') === '#' + sectionId);
-  });
-}
-
-/* ============================================================
-   highlightActiveNav() — passive scroll listener
-   ============================================================ */
-function highlightActiveNav() {
-  const sections = ['venues', 'groups', 'players', 'schedule', 'predictor'];
-  const navHeight = 64;
-  const bannerHeight = 38;
-  const triggerOffset = navHeight + bannerHeight + 80;
-  let currentSection = null;
-  sections.forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    if (el.getBoundingClientRect().top <= triggerOffset) {
-      currentSection = id;
-    }
-  });
-  document.querySelectorAll('.nav-links a, .mobile-menu a').forEach(a => {
-    const href = a.getAttribute('href');
-    a.classList.toggle('active', currentSection ? href === '#' + currentSection : false);
-  });
-}
-window.addEventListener('scroll', highlightActiveNav, { passive: true });
-
-/* ============================================================
-   HAMBURGER MENU
-   ============================================================ */
-const hamburger = document.getElementById('hamburger');
-const mobileMenu = document.getElementById('mobile-menu');
-hamburger.addEventListener('click', () => {
-  const open = mobileMenu.classList.toggle('open');
-  hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
-});
-
-function closeMobileMenu() {
-  mobileMenu.classList.remove('open');
-  hamburger.setAttribute('aria-expanded', 'false');
-}
-
-/* ============================================================
-   LIVE SCORES BANNER ROTATION
-   ============================================================ */
-const matches = [
-  { home: '🇦🇷 Argentina', score: '2 - 1', away: '🇫🇷 France',      status: "LIVE 67'",  live: true  },
-  { home: '🇧🇷 Brazil',    score: '3 - 0', away: '🇷🇸 Serbia',      status: "LIVE 82'",  live: true  },
-  { home: '🇩🇪 Germany',   score: '1 - 1', away: '🇪🇸 Spain',       status: "LIVE 55'",  live: true  },
-  { home: '🏴󠁧󠁢󠁥󠁮󠁧󠁿 England',  score: '2 - 0', away: '🇲🇦 Morocco',    status: "LIVE 71'",  live: true  },
-  { home: '🇵🇹 Portugal',  score: '1 - 0', away: '🇯🇵 Japan',       status: 'FT',         live: false },
-  { home: '🇳🇱 Netherlands',score:'2 - 2', away: '🇲🇽 Mexico',     status: 'FT',         live: false },
-  { home: '🇺🇸 USA',       score: '1 - 0', away: '🇨🇦 Canada',     status: "LIVE 43'",  live: true  },
-  { home: '🇭🇷 Croatia',   score: '0 - 0', away: '🇧🇪 Belgium',    status: "LIVE 28'",  live: true  },
-];
-
-let currentMatchIndex = 0;
-
-function buildMatchHTML(item) {
-  const statusClass = item.live ? 'live' : 'ft';
-  return `
-    <span class="ticker-team">${item.home}</span>
-    <span class="ticker-score">${item.score}</span>
-    <span class="ticker-team">${item.away}</span>
-    <span class="ticker-status ${statusClass}">${item.status}</span>
-  `;
-}
-
-function updateBannerDots(idx) {
-  const dotsContainer = document.getElementById('banner-dots');
-  dotsContainer.innerHTML = '';
-  matches.forEach((_, i) => {
-    const dot = document.createElement('span');
-    dot.className = 'banner-dot' + (i === idx ? ' active' : '');
-    dotsContainer.appendChild(dot);
-  });
-}
-
-function rotateBanner() {
-  const el = document.getElementById('ticker-item');
-  el.style.opacity = '0';
-  setTimeout(() => {
-    el.innerHTML = buildMatchHTML(matches[currentMatchIndex]);
-    el.style.opacity = '1';
-    updateBannerDots(currentMatchIndex);
-  }, 400);
-  currentMatchIndex = (currentMatchIndex + 1) % matches.length;
-}
-
-// Show immediately on load
-const tickerEl = document.getElementById('ticker-item');
-tickerEl.innerHTML = buildMatchHTML(matches[0]);
-updateBannerDots(0);
-currentMatchIndex = 1;
-setInterval(rotateBanner, 3500);
-
-/* ============================================================
-   COUNTDOWN TIMER
-   ============================================================ */
-const countdownTarget = new Date('2026-06-11T20:00:00Z').getTime();
-
-function updateCountdown() {
-  const now = Date.now();
-  const diff = countdownTarget - now;
-  if (diff <= 0) {
-    document.getElementById('cd-days').textContent = '000';
-    document.getElementById('cd-hours').textContent = '00';
-    document.getElementById('cd-mins').textContent = '00';
-    document.getElementById('cd-secs').textContent = '00';
-    return;
-  }
-  const days    = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const hours   = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-  document.getElementById('cd-days').textContent  = String(days).padStart(3, '0');
-  document.getElementById('cd-hours').textContent = String(hours).padStart(2, '0');
-  document.getElementById('cd-mins').textContent  = String(minutes).padStart(2, '0');
-  document.getElementById('cd-secs').textContent  = String(seconds).padStart(2, '0');
-}
-updateCountdown();
-setInterval(updateCountdown, 1000);
-
-/* ============================================================
-   STATS COUNTER ANIMATION
-   ============================================================ */
-function easeOutCubic(t) {
-  return 1 - Math.pow(1 - t, 3);
-}
-
-function animateCounter(el, target, duration) {
-  const start = performance.now();
-  function frame(now) {
-    const elapsed = now - start;
-    const progress = Math.min(elapsed / duration, 1);
-    const eased = easeOutCubic(progress);
-    el.textContent = Math.round(eased * target);
-    if (progress < 1) requestAnimationFrame(frame);
-    else el.textContent = target;
-  }
-  requestAnimationFrame(frame);
-}
-
-const statsStrip = document.querySelector('.stats-strip');
-let statsAnimated = false;
-const statsObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting && !statsAnimated) {
-      statsAnimated = true;
-      document.querySelectorAll('[data-target]').forEach(el => {
-        const target = parseInt(el.getAttribute('data-target'), 10);
-        animateCounter(el, target, 1600);
-      });
-      statsObserver.unobserve(statsStrip);
-    }
-  });
-}, { threshold: 0.2 });
-statsObserver.observe(statsStrip);
-
-/* ============================================================
-   GROUPS TOGGLE
-   ============================================================ */
-let groupsExpanded = false;
-function toggleGroups() {
-  groupsExpanded = !groupsExpanded;
-  const hiddenGroups = document.querySelectorAll('.hidden-group');
-  const btn = document.getElementById('groups-toggle');
-  hiddenGroups.forEach(el => {
-    el.style.display = groupsExpanded ? 'block' : 'none';
-  });
-  btn.textContent = groupsExpanded ? 'SHOW LESS ↑' : 'VIEW ALL 12 GROUPS ↓';
-  btn.setAttribute('aria-expanded', groupsExpanded ? 'true' : 'false');
-}
-
-/* ============================================================
-   MATCH PREDICTOR
-   ============================================================ */
-let selectedScore = null;
-let predictionLocked = false;
-
-function pickScore(btn, score) {
-  if (predictionLocked) return;
-  document.querySelectorAll('.score-btn').forEach(b => {
-    b.classList.remove('active');
-    b.setAttribute('aria-pressed', 'false');
-  });
-  btn.classList.add('active');
-  btn.setAttribute('aria-pressed', 'true');
-  selectedScore = score;
-}
-
-function submitPrediction() {
-  if (predictionLocked) return;
-  const resultEl = document.getElementById('predict-result');
-  const submitBtn = document.getElementById('submit-btn');
-  if (!selectedScore) {
-    resultEl.textContent = 'Please pick a score first ⚽';
-    resultEl.classList.add('visible');
-    return;
-  }
-  const parts = selectedScore.split('-').map(Number);
-  const a = parts[0], b = parts[1];
-  let message = '';
-  if (a > b) {
-    message = '🇦🇷 Argentina win! The Albiceleste faithful will love you.';
-  } else if (b > a) {
-    message = '🇫🇷 France take it! Vive la France — Les Bleus march on.';
-  } else {
-    message = '⚖️ All square! You\'re predicting extra-time drama.';
-  }
-  resultEl.textContent = message;
-  resultEl.classList.add('visible');
-  submitBtn.textContent = '✓ Prediction Locked!';
-  submitBtn.classList.add('locked');
-  predictionLocked = true;
-}
-
-/* ============================================================
-   INTERSECTION OBSERVER — FADE ANIMATIONS
-   ============================================================ */
-const fadeObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('in-view');
-      fadeObserver.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.12 });
-
-// Apply stagger delays to children in grids
-function applyStaggerToChildren(selector, childSelector) {
-  document.querySelectorAll(selector).forEach(parent => {
-    parent.querySelectorAll(childSelector).forEach((child, i) => {
-      child.style.transitionDelay = `${i * 0.08}s`;
-    });
-  });
-}
-
-// Apply fade-up to various elements and observe them
-document.querySelectorAll('.fade-up, .fade-left, .t-event').forEach(el => {
-  fadeObserver.observe(el);
-});
-
-// Stagger grids
-applyStaggerToChildren('.venues-grid', '.venue-card');
-applyStaggerToChildren('.groups-grid', '.group-card');
-applyStaggerToChildren('.players-grid', '.player-card');
-applyStaggerToChildren('.stats-grid', '.stat-item');
-applyStaggerToChildren('.timeline', '.t-event');
-
-// Also apply stagger to countdown blocks
-document.querySelectorAll('.cd-block').forEach((el, i) => {
-  el.style.transitionDelay = `${i * 0.08}s`;
-  el.classList.add('in-view');
-});
-
-/* ============================================================
-   CANVAS — ANIMATED FOOTBALLS
-   ============================================================ */
-(function() {
-  // Check reduced motion preference
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (prefersReducedMotion) return;
-
-  const canvas = document.getElementById('ball-canvas');
-  const ctx = canvas.getContext('2d');
-
-  let W = window.innerWidth;
-  let H = window.innerHeight;
-  canvas.width = W;
-  canvas.height = H;
-
-  const ballSizes = [16, 24, 32, 38, 44];
-
-  function randomBetween(a, b) {
-    return a + Math.random() * (b - a);
-  }
-
-  function randomSign() {
-    return Math.random() > 0.5 ? 1 : -1;
-  }
-
-  const balls = ballSizes.map((r, i) => ({
-    x: randomBetween(r, W - r),
-    y: randomBetween(r, H - r),
-    vx: randomSign() * randomBetween(0.4, 1.8),
-    vy: randomSign() * randomBetween(0.4, 1.8),
-    r: r,
-    rot: randomBetween(0, Math.PI * 2),
-    rotSpeed: randomSign() * randomBetween(0.015, 0.03),
-  }));
-
-  function drawPentagon(ctx, cx, cy, radius) {
-    ctx.beginPath();
-    for (let i = 0; i < 5; i++) {
-      const angle = (i * 2 * Math.PI / 5) - Math.PI / 2;
-      const px = cx + radius * Math.cos(angle);
-      const py = cy + radius * Math.sin(angle);
-      if (i === 0) ctx.moveTo(px, py);
-      else ctx.lineTo(px, py);
-    }
-    ctx.closePath();
-  }
-
-  function drawBall(ctx, ball) {
-    const { r, rot } = ball;
-
-    ctx.save();
-    ctx.translate(ball.x, ball.y);
-    ctx.rotate(rot);
-
-    // Shadow glow
-    ctx.shadowBlur = 14;
-    ctx.shadowColor = 'rgba(201,162,39,0.35)';
-
-    // Main circle
-    ctx.beginPath();
-    ctx.arc(0, 0, r, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(201,162,39,0.65)';
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-
-    // Pentagon positions: center + 4 around it
-    const pentRadius = r * 0.52;
-    const pentSize = r * 0.2;
-    const centerPent = { x: 0, y: -pentRadius };
-    const outerPents = [];
-    for (let i = 0; i < 4; i++) {
-      const angle = (i * Math.PI * 2 / 4) + Math.PI / 4;
-      outerPents.push({
-        x: pentRadius * Math.cos(angle),
-        y: pentRadius * Math.sin(angle),
-      });
-    }
-
-    // Draw lines from center to outer pentagons
-    ctx.strokeStyle = 'rgba(201,162,39,0.2)';
-    ctx.lineWidth = 0.7;
-    outerPents.forEach(op => {
-      ctx.beginPath();
-      ctx.moveTo(centerPent.x, centerPent.y);
-      ctx.lineTo(op.x, op.y);
-      ctx.stroke();
-    });
-
-    // Draw pentagons
-    ctx.strokeStyle = 'rgba(201,162,39,0.4)';
-    ctx.lineWidth = 1.0;
-
-    drawPentagon(ctx, centerPent.x, centerPent.y, pentSize);
-    ctx.stroke();
-
-    outerPents.forEach(op => {
-      drawPentagon(ctx, op.x, op.y, pentSize);
-      ctx.stroke();
-    });
-
-    ctx.shadowBlur = 0;
-    ctx.restore();
-  }
-
-  let rafId = null;
-
-  function tick() {
-    ctx.clearRect(0, 0, W, H);
-    balls.forEach(ball => {
-      ball.x += ball.vx;
-      ball.y += ball.vy;
-      ball.rot += ball.rotSpeed;
-      // Edge wrap
-      if (ball.x < -ball.r) ball.x = W + ball.r;
-      if (ball.x > W + ball.r) ball.x = -ball.r;
-      if (ball.y < -ball.r) ball.y = H + ball.r;
-      if (ball.y > H + ball.r) ball.y = -ball.r;
-      drawBall(ctx, ball);
-    });
-    rafId = requestAnimationFrame(tick);
-  }
-
-  // Pause when tab hidden
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) {
-      if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
-    } else {
-      if (!rafId) rafId = requestAnimationFrame(tick);
-    }
-  });
-
-  // Resize handler
-  window.addEventListener('resize', () => {
-    W = window.innerWidth;
-    H = window.innerHeight;
-    canvas.width = W;
-    canvas.height = H;
-  });
-
-  // Start
-  rafId = requestAnimationFrame(tick);
-})();
-</script>
 </body>
 </html>

@@ -1,0 +1,255 @@
+/*
+ * Watermark ball size and opacity tuning
+ * Smaller background footballs: 60–120px, opacity 0.06–0.10
+ * Matches the established watermark aesthetic
+ */
+
+/* ── Watermark layer container ── */
+.watermark-layer {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* ── Base watermark ball ── */
+.watermark-ball {
+  position: absolute;
+  background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Soccerball.svg/240px-Soccerball.svg.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  border-radius: 50%;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+/* ── Size tiers (60 px – 120 px) ── */
+.watermark-ball--xs  { width:  60px; height:  60px; }
+.watermark-ball--sm  { width:  75px; height:  75px; }
+.watermark-ball--md  { width:  90px; height:  90px; }
+.watermark-ball--lg  { width: 105px; height: 105px; }
+.watermark-ball--xl  { width: 120px; height: 120px; }
+
+/* ── Opacity tiers (0.06 – 0.10) ── */
+.watermark-ball--opacity-06  { opacity: 0.06; }
+.watermark-ball--opacity-07  { opacity: 0.07; }
+.watermark-ball--opacity-08  { opacity: 0.08; }
+.watermark-ball--opacity-09  { opacity: 0.09; }
+.watermark-ball--opacity-10  { opacity: 0.10; }
+
+/* ── Float / drift animations ── */
+@keyframes watermark-drift-a {
+  0%   { transform: translate(0,    0)    rotate(0deg); }
+  25%  { transform: translate(18px, -22px) rotate(90deg); }
+  50%  { transform: translate(-12px, 30px) rotate(180deg); }
+  75%  { transform: translate(25px,  15px) rotate(270deg); }
+  100% { transform: translate(0,    0)    rotate(360deg); }
+}
+
+@keyframes watermark-drift-b {
+  0%   { transform: translate(0,    0)    rotate(0deg); }
+  33%  { transform: translate(-20px, 25px) rotate(120deg); }
+  66%  { transform: translate(15px, -18px) rotate(240deg); }
+  100% { transform: translate(0,    0)    rotate(360deg); }
+}
+
+@keyframes watermark-drift-c {
+  0%   { transform: translate(0,    0)    rotate(0deg); }
+  20%  { transform: translate(10px, -30px) rotate(72deg); }
+  40%  { transform: translate(28px,  10px) rotate(144deg); }
+  60%  { transform: translate(-15px, 20px) rotate(216deg); }
+  80%  { transform: translate(-25px, -10px) rotate(288deg); }
+  100% { transform: translate(0,    0)    rotate(360deg); }
+}
+
+@keyframes watermark-drift-d {
+  0%   { transform: translate(0,    0)    rotate(0deg); }
+  50%  { transform: translate(-30px, -20px) rotate(180deg); }
+  100% { transform: translate(0,    0)    rotate(360deg); }
+}
+
+/* ── Per-ball position & animation assignments ── */
+
+/* Ball 1 */
+.watermark-ball:nth-child(1) {
+  top: 8%; left: 5%;
+  animation: watermark-drift-a 18s ease-in-out infinite;
+}
+
+/* Ball 2 */
+.watermark-ball:nth-child(2) {
+  top: 15%; left: 22%;
+  animation: watermark-drift-b 22s ease-in-out infinite;
+  animation-delay: -4s;
+}
+
+/* Ball 3 */
+.watermark-ball:nth-child(3) {
+  top: 5%; left: 45%;
+  animation: watermark-drift-c 26s ease-in-out infinite;
+  animation-delay: -8s;
+}
+
+/* Ball 4 */
+.watermark-ball:nth-child(4) {
+  top: 10%; left: 68%;
+  animation: watermark-drift-d 20s ease-in-out infinite;
+  animation-delay: -2s;
+}
+
+/* Ball 5 */
+.watermark-ball:nth-child(5) {
+  top: 8%; left: 88%;
+  animation: watermark-drift-a 24s ease-in-out infinite;
+  animation-delay: -6s;
+}
+
+/* Ball 6 */
+.watermark-ball:nth-child(6) {
+  top: 28%; left: 3%;
+  animation: watermark-drift-c 19s ease-in-out infinite;
+  animation-delay: -11s;
+}
+
+/* Ball 7 */
+.watermark-ball:nth-child(7) {
+  top: 32%; left: 30%;
+  animation: watermark-drift-b 28s ease-in-out infinite;
+  animation-delay: -15s;
+}
+
+/* Ball 8 */
+.watermark-ball:nth-child(8) {
+  top: 25%; left: 55%;
+  animation: watermark-drift-a 21s ease-in-out infinite;
+  animation-delay: -9s;
+}
+
+/* Ball 9 */
+.watermark-ball:nth-child(9) {
+  top: 30%; left: 78%;
+  animation: watermark-drift-d 23s ease-in-out infinite;
+  animation-delay: -3s;
+}
+
+/* Ball 10 */
+.watermark-ball:nth-child(10) {
+  top: 45%; left: 12%;
+  animation: watermark-drift-b 17s ease-in-out infinite;
+  animation-delay: -7s;
+}
+
+/* Ball 11 */
+.watermark-ball:nth-child(11) {
+  top: 50%; left: 38%;
+  animation: watermark-drift-c 25s ease-in-out infinite;
+  animation-delay: -13s;
+}
+
+/* Ball 12 */
+.watermark-ball:nth-child(12) {
+  top: 48%; left: 62%;
+  animation: watermark-drift-a 16s ease-in-out infinite;
+  animation-delay: -5s;
+}
+
+/* Ball 13 */
+.watermark-ball:nth-child(13) {
+  top: 44%; left: 85%;
+  animation: watermark-drift-b 27s ease-in-out infinite;
+  animation-delay: -10s;
+}
+
+/* Ball 14 */
+.watermark-ball:nth-child(14) {
+  top: 62%; left: 7%;
+  animation: watermark-drift-d 22s ease-in-out infinite;
+  animation-delay: -14s;
+}
+
+/* Ball 15 */
+.watermark-ball:nth-child(15) {
+  top: 65%; left: 28%;
+  animation: watermark-drift-c 18s ease-in-out infinite;
+  animation-delay: -1s;
+}
+
+/* Ball 16 */
+.watermark-ball:nth-child(16) {
+  top: 60%; left: 50%;
+  animation: watermark-drift-a 29s ease-in-out infinite;
+  animation-delay: -16s;
+}
+
+/* Ball 17 */
+.watermark-ball:nth-child(17) {
+  top: 68%; left: 72%;
+  animation: watermark-drift-b 20s ease-in-out infinite;
+  animation-delay: -12s;
+}
+
+/* Ball 18 */
+.watermark-ball:nth-child(18) {
+  top: 63%; left: 92%;
+  animation: watermark-drift-c 24s ease-in-out infinite;
+  animation-delay: -8s;
+}
+
+/* Ball 19 */
+.watermark-ball:nth-child(19) {
+  top: 80%; left: 18%;
+  animation: watermark-drift-d 15s ease-in-out infinite;
+  animation-delay: -3s;
+}
+
+/* Ball 20 */
+.watermark-ball:nth-child(20) {
+  top: 82%; left: 42%;
+  animation: watermark-drift-a 26s ease-in-out infinite;
+  animation-delay: -17s;
+}
+
+/* Ball 21 */
+.watermark-ball:nth-child(21) {
+  top: 78%; left: 65%;
+  animation: watermark-drift-b 19s ease-in-out infinite;
+  animation-delay: -6s;
+}
+
+/* Ball 22 */
+.watermark-ball:nth-child(22) {
+  top: 85%; left: 83%;
+  animation: watermark-drift-c 23s ease-in-out infinite;
+  animation-delay: -11s;
+}
+
+/* Ball 23 */
+.watermark-ball:nth-child(23) {
+  top: 92%; left: 5%;
+  animation: watermark-drift-a 21s ease-in-out infinite;
+  animation-delay: -9s;
+}
+
+/* Ball 24 */
+.watermark-ball:nth-child(24) {
+  top: 90%; left: 35%;
+  animation: watermark-drift-d 28s ease-in-out infinite;
+  animation-delay: -4s;
+}
+
+/* Ball 25 */
+.watermark-ball:nth-child(25) {
+  top: 88%; left: 58%;
+  animation: watermark-drift-b 16s ease-in-out infinite;
+  animation-delay: -13s;
+}
+
+/* ── Reduced-motion: keep balls visible but static ── */
+@media (prefers-reduced-motion: reduce) {
+  .watermark-ball {
+    animation: none !important;
+  }
+}

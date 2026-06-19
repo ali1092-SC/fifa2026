@@ -1,0 +1,71 @@
+/*
+ * Watermark styles for FIFA World Cup 2026 official football background.
+ * Applied to the .watermark element inside index.html.
+ *
+ * Usage:
+ *   <div class="watermark" role="presentation" aria-hidden="true"></div>
+ *
+ * Pure presentational rules — no layout side-effects on sibling content.
+ */
+
+.watermark {
+  /* Pin to viewport so it stays centred on scroll */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  /*
+   * Responsive square: fill most of the viewport without overflow.
+   * min(90vw, 90vh) keeps it fully visible on any aspect ratio.
+   */
+  width: min(90vw, 90vh);
+  height: min(90vw, 90vh);
+
+  /* Official FIFA World Cup 2026 ball image */
+  background-image: url("https://upload.wikimedia.org/wikipedia/en/thumb/5/57/2026_FIFA_World_Cup_logo.svg/800px-2026_FIFA_World_Cup_logo.svg.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+
+  /* Low-opacity watermark effect (0.08 – 0.12 range) */
+  opacity: 0.10;
+
+  /*
+   * Sit behind all page content but remain visible above the
+   * document background colour.  A negative z-index would hide
+   * it behind a white <body> background, so we use 0 here and
+   * rely on pointer-events: none to keep it non-interactive.
+   */
+  z-index: -1;
+
+  /* Never intercept clicks / touch events */
+  pointer-events: none;
+
+  /* Prevent the element itself from creating a scrollbar */
+  overflow: hidden;
+
+  /* Accessible: purely decorative */
+  user-select: none;
+}
+
+/* ── Optional: desaturate the image so it reads as a true watermark ── */
+.watermark {
+  filter: grayscale(30%);
+}
+
+/* ── Respect reduced-motion preference (no animation used here,         ──
+   ── but guard in case a transition is added later)                     ── */
+@media (prefers-reduced-motion: reduce) {
+  .watermark {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* ── Print: hide the watermark so it doesn't appear on paper ── */
+@media print {
+  .watermark {
+    display: none;
+  }
+}

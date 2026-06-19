@@ -5,541 +5,282 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FIFA World Cup 2026</title>
     <style>
-        * {
+        /* ── Reset & base ─────────────────────────────────────────── */
+        *, *::before, *::after {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #0a0a2e 0%, #1a1a4e 30%, #0d2137 60%, #0a1628 100%);
             min-height: 100vh;
-            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0e1a;
+            color: #f0f0f0;
             overflow-x: hidden;
-            position: relative;
         }
 
-        /* ── Background Soccer Balls ── */
-        .bg-balls-container {
+        /* ── Watermark ────────────────────────────────────────────── */
+        /*
+         * #watermark sits behind all content (z-index: -1).
+         * It is centred with the classic fixed + translate trick so it
+         * always stays visually centred regardless of scroll or viewport
+         * size.  The SVG football is rendered as an inline <svg> child
+         * so no external asset is required.
+         */
+        #watermark {
             position: fixed;
-            top: 0;
-            left: 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: min(90vw, 90vh);
+            height: min(90vw, 90vh);
+            z-index: -1;
+            opacity: 0.10;          /* 0.08 – 0.12 range; tweak to taste */
+            pointer-events: none;   /* never intercept clicks / touch      */
+            user-select: none;
+        }
+
+        #watermark svg {
             width: 100%;
             height: 100%;
-            pointer-events: none;
-            overflow: hidden;
-            z-index: 0;
         }
 
-        .soccer-ball {
-            position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(circle at 35% 35%, #ffffff, #cccccc 40%, #888888 70%, #444444);
-            box-shadow:
-                inset -4px -4px 8px rgba(0,0,0,0.5),
-                inset 2px 2px 6px rgba(255,255,255,0.3);
-        }
-
-        /* Pentagon patch overlay using pseudo-element pattern */
-        .soccer-ball::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            background:
-                radial-gradient(circle at 50% 20%, #222 8%, transparent 9%),
-                radial-gradient(circle at 80% 38%, #222 8%, transparent 9%),
-                radial-gradient(circle at 68% 72%, #222 8%, transparent 9%),
-                radial-gradient(circle at 32% 72%, #222 8%, transparent 9%),
-                radial-gradient(circle at 20% 38%, #222 8%, transparent 9%),
-                radial-gradient(circle at 50% 50%, #333 14%, transparent 15%);
-        }
-
-        /* ── Keyframe Animations ── */
-        @keyframes floatBall {
-            0%   { transform: translateY(0px)   rotate(0deg); }
-            33%  { transform: translateY(-18px) rotate(60deg); }
-            66%  { transform: translateY(8px)   rotate(120deg); }
-            100% { transform: translateY(0px)   rotate(180deg); }
-        }
-
-        @keyframes driftBall {
-            0%   { transform: translate(0px, 0px)    rotate(0deg); }
-            25%  { transform: translate(12px, -14px) rotate(45deg); }
-            50%  { transform: translate(20px, 6px)   rotate(90deg); }
-            75%  { transform: translate(6px, 18px)   rotate(135deg); }
-            100% { transform: translate(0px, 0px)    rotate(180deg); }
-        }
-
-        @keyframes spinFloat {
-            0%   { transform: translateY(0px)   rotate(0deg); }
-            50%  { transform: translateY(-24px) rotate(180deg); }
-            100% { transform: translateY(0px)   rotate(360deg); }
-        }
-
-        @keyframes gentleDrift {
-            0%   { transform: translate(0px,  0px)  rotate(0deg); }
-            50%  { transform: translate(-15px, 20px) rotate(90deg); }
-            100% { transform: translate(0px,  0px)  rotate(180deg); }
-        }
-
-        /* ── Ball Size / Depth Classes ── */
-        /* z-index 1 = deepest / most transparent */
-        .ball-xs  { width: 20px;  height: 20px;  z-index: 1; }
-        .ball-sm  { width: 32px;  height: 32px;  z-index: 1; }
-        .ball-md  { width: 50px;  height: 50px;  z-index: 2; }
-        .ball-lg  { width: 65px;  height: 65px;  z-index: 2; }
-        .ball-xl  { width: 80px;  height: 80px;  z-index: 3; }
-
-        /* ── Individual Ball Positions, Opacities & Animations ── */
-
-        /* --- Deep layer (xs/sm, opacity 0.04–0.07) --- */
-        .ball-01 { top:  4%;  left:  3%;  opacity: 0.05; animation: floatBall    14s ease-in-out infinite; animation-delay: 0s; }
-        .ball-02 { top:  8%;  left: 22%;  opacity: 0.04; animation: driftBall    18s ease-in-out infinite; animation-delay: -3s; }
-        .ball-03 { top: 15%;  left: 48%;  opacity: 0.06; animation: gentleDrift  22s ease-in-out infinite; animation-delay: -7s; }
-        .ball-04 { top: 10%;  left: 72%;  opacity: 0.05; animation: floatBall    16s ease-in-out infinite; animation-delay: -2s; }
-        .ball-05 { top:  5%;  left: 90%;  opacity: 0.04; animation: driftBall    20s ease-in-out infinite; animation-delay: -5s; }
-        .ball-06 { top: 28%;  left:  8%;  opacity: 0.06; animation: spinFloat    24s ease-in-out infinite; animation-delay: -9s; }
-        .ball-07 { top: 35%;  left: 35%;  opacity: 0.05; animation: gentleDrift  17s ease-in-out infinite; animation-delay: -1s; }
-        .ball-08 { top: 30%;  left: 60%;  opacity: 0.04; animation: floatBall    21s ease-in-out infinite; animation-delay: -6s; }
-        .ball-09 { top: 25%;  left: 82%;  opacity: 0.06; animation: driftBall    15s ease-in-out infinite; animation-delay: -4s; }
-        .ball-10 { top: 50%;  left:  2%;  opacity: 0.05; animation: spinFloat    19s ease-in-out infinite; animation-delay: -8s; }
-        .ball-11 { top: 55%;  left: 18%;  opacity: 0.04; animation: gentleDrift  23s ease-in-out infinite; animation-delay: -2s; }
-        .ball-12 { top: 48%;  left: 42%;  opacity: 0.06; animation: floatBall    18s ease-in-out infinite; animation-delay: -11s; }
-        .ball-13 { top: 52%;  left: 68%;  opacity: 0.05; animation: driftBall    16s ease-in-out infinite; animation-delay: -3s; }
-        .ball-14 { top: 45%;  left: 88%;  opacity: 0.04; animation: spinFloat    25s ease-in-out infinite; animation-delay: -7s; }
-        .ball-15 { top: 70%;  left:  6%;  opacity: 0.06; animation: gentleDrift  20s ease-in-out infinite; animation-delay: -5s; }
-        .ball-16 { top: 75%;  left: 28%;  opacity: 0.05; animation: floatBall    22s ease-in-out infinite; animation-delay: -9s; }
-        .ball-17 { top: 68%;  left: 52%;  opacity: 0.04; animation: driftBall    17s ease-in-out infinite; animation-delay: -1s; }
-        .ball-18 { top: 72%;  left: 76%;  opacity: 0.06; animation: spinFloat    14s ease-in-out infinite; animation-delay: -6s; }
-        .ball-19 { top: 80%;  left: 92%;  opacity: 0.05; animation: gentleDrift  19s ease-in-out infinite; animation-delay: -4s; }
-        .ball-20 { top: 90%;  left: 12%;  opacity: 0.04; animation: floatBall    26s ease-in-out infinite; animation-delay: -10s; }
-        .ball-21 { top: 88%;  left: 40%;  opacity: 0.06; animation: driftBall    21s ease-in-out infinite; animation-delay: -2s; }
-        .ball-22 { top: 92%;  left: 62%;  opacity: 0.05; animation: spinFloat    16s ease-in-out infinite; animation-delay: -8s; }
-
-        /* --- Mid layer (md, opacity 0.07–0.11) --- */
-        .ball-23 { top: 12%;  left: 12%;  opacity: 0.09; animation: floatBall    20s ease-in-out infinite; animation-delay: -4s; }
-        .ball-24 { top: 18%;  left: 58%;  opacity: 0.08; animation: driftBall    24s ease-in-out infinite; animation-delay: -12s; }
-        .ball-25 { top: 40%;  left: 26%;  opacity: 0.10; animation: gentleDrift  18s ease-in-out infinite; animation-delay: -6s; }
-        .ball-26 { top: 38%;  left: 75%;  opacity: 0.08; animation: spinFloat    22s ease-in-out infinite; animation-delay: -3s; }
-        .ball-27 { top: 62%;  left: 44%;  opacity: 0.09; animation: floatBall    15s ease-in-out infinite; animation-delay: -9s; }
-        .ball-28 { top: 78%;  left: 18%;  opacity: 0.11; animation: driftBall    19s ease-in-out infinite; animation-delay: -1s; }
-        .ball-29 { top: 82%;  left: 82%;  opacity: 0.08; animation: gentleDrift  23s ease-in-out infinite; animation-delay: -7s; }
-
-        /* --- Foreground layer (lg/xl, opacity 0.11–0.15) --- */
-        .ball-30 { top:  6%;  left: 38%;  opacity: 0.12; animation: driftBall    28s ease-in-out infinite; animation-delay: -5s; }
-        .ball-31 { top: 22%;  left: 92%;  opacity: 0.13; animation: spinFloat    30s ease-in-out infinite; animation-delay: -14s; }
-        .ball-32 { top: 58%;  left:  0%;  opacity: 0.11; animation: floatBall    26s ease-in-out infinite; animation-delay: -2s; }
-        .ball-33 { top: 65%;  left: 88%;  opacity: 0.14; animation: gentleDrift  32s ease-in-out infinite; animation-delay: -10s; }
-        .ball-34 { top: 85%;  left: 55%;  opacity: 0.15; animation: driftBall    27s ease-in-out infinite; animation-delay: -6s; }
-        .ball-35 { top: 42%;  left: 95%;  opacity: 0.12; animation: spinFloat    29s ease-in-out infinite; animation-delay: -3s; }
-
-        /* ── Main Content ── */
-        .content {
-            position: relative;
-            z-index: 10;
-        }
-
+        /* ── Page chrome ──────────────────────────────────────────── */
         header {
             text-align: center;
-            padding: 60px 20px 40px;
+            padding: 3rem 1rem 1.5rem;
+            position: relative;
+            z-index: 1;
         }
 
         header h1 {
-            font-size: clamp(2.5rem, 7vw, 5rem);
+            font-size: clamp(1.8rem, 5vw, 3.5rem);
             font-weight: 900;
-            background: linear-gradient(135deg, #FFD700, #FFA500, #FF6B35);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #d4a017 0%, #f5e07a 50%, #d4a017 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-shadow: none;
-            letter-spacing: 2px;
+        }
+
+        header p {
+            margin-top: 0.6rem;
+            font-size: clamp(0.9rem, 2.5vw, 1.25rem);
+            color: #9ab;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
         }
 
-        header h2 {
-            font-size: clamp(1rem, 3vw, 1.6rem);
-            color: #a0c4ff;
-            margin-top: 10px;
-            font-weight: 300;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-        }
-
-        .tagline {
-            font-size: clamp(0.85rem, 2vw, 1.1rem);
-            color: #7ecfff;
-            margin-top: 8px;
-            opacity: 0.85;
-            letter-spacing: 2px;
-        }
-
-        .hero-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,165,0,0.1));
-            border: 1px solid rgba(255,215,0,0.4);
-            border-radius: 50px;
-            padding: 8px 28px;
-            margin-top: 18px;
-            font-size: 0.9rem;
-            color: #FFD700;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-        }
-
-        /* Host Countries */
-        .host-section {
+        main {
+            position: relative;
+            z-index: 1;
             max-width: 900px;
-            margin: 0 auto 50px;
-            padding: 0 20px;
-            text-align: center;
+            margin: 2rem auto;
+            padding: 0 1.5rem 4rem;
         }
 
-        .host-section h3 {
-            font-size: 1.4rem;
-            color: #FFD700;
-            margin-bottom: 24px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .host-countries {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            flex-wrap: wrap;
-        }
-
-        .host-card {
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 16px;
-            padding: 24px 32px;
-            min-width: 160px;
-            transition: transform 0.3s ease, background 0.3s ease;
-            backdrop-filter: blur(8px);
-        }
-
-        .host-card:hover {
-            transform: translateY(-6px);
-            background: rgba(255,255,255,0.1);
-        }
-
-        .host-card .flag {
-            font-size: 3rem;
-            display: block;
-            margin-bottom: 10px;
-        }
-
-        .host-card .country {
-            font-size: 1rem;
-            font-weight: 700;
-            color: #ffffff;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        /* Stats Section */
-        .stats-section {
-            max-width: 1000px;
-            margin: 0 auto 60px;
-            padding: 0 20px;
-        }
-
-        .stats-grid {
+        .card-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
         }
 
-        .stat-card {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(100,160,255,0.2);
-            border-radius: 16px;
-            padding: 28px 20px;
-            text-align: center;
-            transition: transform 0.3s ease, border-color 0.3s ease;
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            border-radius: 1rem;
+            padding: 1.75rem 1.5rem;
             backdrop-filter: blur(6px);
+            transition: transform 0.2s ease, border-color 0.2s ease;
         }
 
-        .stat-card:hover {
+        .card:hover {
             transform: translateY(-4px);
-            border-color: rgba(100,160,255,0.5);
+            border-color: rgba(212, 160, 23, 0.5);
         }
 
-        .stat-card .number {
-            font-size: 2.8rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, #FFD700, #FFA500);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            display: block;
+        .card h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #f5e07a;
         }
 
-        .stat-card .label {
-            font-size: 0.85rem;
-            color: #a0c4ff;
-            margin-top: 6px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+        .card p {
+            font-size: 0.92rem;
+            line-height: 1.6;
+            color: #aab;
         }
 
-        /* Groups Section */
-        .groups-section {
-            max-width: 1100px;
-            margin: 0 auto 60px;
-            padding: 0 20px;
-        }
-
-        .groups-section h3 {
-            text-align: center;
-            font-size: 1.4rem;
-            color: #FFD700;
-            margin-bottom: 30px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .groups-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 16px;
-        }
-
-        .group-card {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 18px;
-            transition: transform 0.2s ease;
-            backdrop-filter: blur(4px);
-        }
-
-        .group-card:hover {
-            transform: translateY(-3px);
-        }
-
-        .group-card h4 {
-            font-size: 0.8rem;
-            color: #FFD700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 12px;
-            border-bottom: 1px solid rgba(255,215,0,0.2);
-            padding-bottom: 8px;
-        }
-
-        .group-card .team {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 5px 0;
-            font-size: 0.9rem;
-            color: #dde8ff;
-        }
-
-        .group-card .team .tf {
-            font-size: 1.2rem;
-        }
-
-        /* Footer */
         footer {
             text-align: center;
-            padding: 30px 20px;
-            color: rgba(255,255,255,0.35);
+            padding: 1.5rem;
             font-size: 0.8rem;
-            letter-spacing: 1px;
-            border-top: 1px solid rgba(255,255,255,0.07);
+            color: #556;
+            position: relative;
+            z-index: 1;
         }
     </style>
 </head>
 <body>
 
-    <!-- ══════════════════════════════════════════
-         BACKGROUND SOCCER BALLS
-    ══════════════════════════════════════════ -->
-    <div class="bg-balls-container" aria-hidden="true">
+    <!-- ═══════════════════════════════════════════════════════════
+         WATERMARK — FIFA World Cup 2026 official football (SVG)
+         Inline SVG avoids any external dependency and scales
+         perfectly to any viewport.
+    ════════════════════════════════════════════════════════════════ -->
+    <div id="watermark" aria-hidden="true">
+        <!--
+            Classic 32-panel Adidas-style football with the
+            traditional black-and-white pentagon / hexagon pattern.
+            Colour is intentionally white/light-grey so the CSS
+            opacity + dark background give the correct watermark tone.
+        -->
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"
+             role="img" aria-label="FIFA World Cup 2026 Football Watermark">
+            <title>FIFA World Cup 2026 Football</title>
 
-        <!-- Deep layer — extra-small balls -->
-        <div class="soccer-ball ball-xs ball-01"></div>
-        <div class="soccer-ball ball-xs ball-02"></div>
-        <div class="soccer-ball ball-xs ball-03"></div>
-        <div class="soccer-ball ball-xs ball-04"></div>
-        <div class="soccer-ball ball-xs ball-05"></div>
-        <div class="soccer-ball ball-xs ball-10"></div>
-        <div class="soccer-ball ball-xs ball-14"></div>
-        <div class="soccer-ball ball-xs ball-19"></div>
-        <div class="soccer-ball ball-xs ball-20"></div>
-        <div class="soccer-ball ball-xs ball-22"></div>
+            <!-- ── Outer circle (ball silhouette) ── -->
+            <circle cx="100" cy="100" r="95"
+                    fill="none" stroke="#ffffff" stroke-width="3"/>
 
-        <!-- Deep layer — small balls -->
-        <div class="soccer-ball ball-sm ball-06"></div>
-        <div class="soccer-ball ball-sm ball-07"></div>
-        <div class="soccer-ball ball-sm ball-08"></div>
-        <div class="soccer-ball ball-sm ball-09"></div>
-        <div class="soccer-ball ball-sm ball-11"></div>
-        <div class="soccer-ball ball-sm ball-12"></div>
-        <div class="soccer-ball ball-sm ball-13"></div>
-        <div class="soccer-ball ball-sm ball-15"></div>
-        <div class="soccer-ball ball-sm ball-16"></div>
-        <div class="soccer-ball ball-sm ball-17"></div>
-        <div class="soccer-ball ball-sm ball-18"></div>
-        <div class="soccer-ball ball-sm ball-21"></div>
+            <!-- ── Ball filled background ── -->
+            <circle cx="100" cy="100" r="94" fill="#e8e8e8"/>
 
-        <!-- Mid layer — medium balls -->
-        <div class="soccer-ball ball-md ball-23"></div>
-        <div class="soccer-ball ball-md ball-24"></div>
-        <div class="soccer-ball ball-md ball-25"></div>
-        <div class="soccer-ball ball-md ball-26"></div>
-        <div class="soccer-ball ball-md ball-27"></div>
-        <div class="soccer-ball ball-md ball-28"></div>
-        <div class="soccer-ball ball-md ball-29"></div>
+            <!-- ══════════════════════════════════════════════════
+                 Classic Telstar-style panel layout
+                 5 black pentagons + surrounding hexagons
+                 Positions calculated for a standard football.
+            ═══════════════════════════════════════════════════════ -->
 
-        <!-- Foreground layer — large balls -->
-        <div class="soccer-ball ball-lg ball-30"></div>
-        <div class="soccer-ball ball-lg ball-31"></div>
-        <div class="soccer-ball ball-lg ball-32"></div>
-        <div class="soccer-ball ball-lg ball-35"></div>
+            <!-- Central top pentagon -->
+            <polygon points="100,18 114,28 109,44 91,44 86,28"
+                     fill="#1a1a1a"/>
 
-        <!-- Foreground layer — extra-large balls -->
-        <div class="soccer-ball ball-xl ball-33"></div>
-        <div class="soccer-ball ball-xl ball-34"></div>
+            <!-- Pentagon – lower-left -->
+            <polygon points="38,65 54,60 62,74 52,85 36,80"
+                     fill="#1a1a1a"/>
 
+            <!-- Pentagon – lower-right -->
+            <polygon points="162,65 146,60 138,74 148,85 164,80"
+                     fill="#1a1a1a"/>
+
+            <!-- Pentagon – bottom-left -->
+            <polygon points="58,138 66,122 82,124 86,140 72,150"
+                     fill="#1a1a1a"/>
+
+            <!-- Pentagon – bottom-right -->
+            <polygon points="142,138 134,122 118,124 114,140 128,150"
+                     fill="#1a1a1a"/>
+
+            <!-- ── Seam lines connecting panels ── -->
+            <!-- top pentagon → lower-left pentagon -->
+            <line x1="86" y1="28" x2="54" y2="60"
+                  stroke="#555" stroke-width="1.5"/>
+            <!-- top pentagon → lower-right pentagon -->
+            <line x1="114" y1="28" x2="146" y2="60"
+                  stroke="#555" stroke-width="1.5"/>
+            <!-- top pentagon bottom edge → bottom-left -->
+            <line x1="91" y1="44" x2="82" y2="124"
+                  stroke="#555" stroke-width="1.5"/>
+            <!-- top pentagon bottom edge → bottom-right -->
+            <line x1="109" y1="44" x2="118" y2="124"
+                  stroke="#555" stroke-width="1.5"/>
+            <!-- lower-left → bottom-left -->
+            <line x1="52" y1="85" x2="66" y2="122"
+                  stroke="#555" stroke-width="1.5"/>
+            <!-- lower-right → bottom-right -->
+            <line x1="148" y1="85" x2="134" y2="122"
+                  stroke="#555" stroke-width="1.5"/>
+            <!-- bottom two pentagons connected -->
+            <line x1="86" y1="140" x2="114" y2="140"
+                  stroke="#555" stroke-width="1.5"/>
+            <!-- lower-left to lower-right via centre -->
+            <line x1="62" y1="74" x2="138" y2="74"
+                  stroke="#555" stroke-width="1.5"/>
+
+            <!-- ── "FIFA WORLD CUP" arc text at top ── -->
+            <path id="topArc"
+                  d="M 30,100 A 70,70 0 0,1 170,100"
+                  fill="none"/>
+            <text font-family="'Arial Black', Arial, sans-serif"
+                  font-size="11" font-weight="900"
+                  fill="#1a1a1a" letter-spacing="2">
+                <textPath href="#topArc" startOffset="10%">
+                    FIFA WORLD CUP
+                </textPath>
+            </text>
+
+            <!-- ── "2026" bold centred ── -->
+            <text x="100" y="108"
+                  text-anchor="middle"
+                  dominant-baseline="middle"
+                  font-family="'Arial Black', Arial, sans-serif"
+                  font-size="22" font-weight="900"
+                  fill="#1a1a1a" letter-spacing="3">
+                2026
+            </text>
+
+            <!-- ── "USA · CANADA · MEXICO" arc text at bottom ── -->
+            <path id="bottomArc"
+                  d="M 28,108 A 72,72 0 0,0 172,108"
+                  fill="none"/>
+            <text font-family="'Arial Black', Arial, sans-serif"
+                  font-size="8.5" font-weight="700"
+                  fill="#1a1a1a" letter-spacing="1.5">
+                <textPath href="#bottomArc" startOffset="8%">
+                    USA · CANADA · MEXICO
+                </textPath>
+            </text>
+        </svg>
     </div>
+    <!-- ── end watermark ────────────────────────────────────────── -->
 
-    <!-- ══════════════════════════════════════════
-         MAIN CONTENT
-    ══════════════════════════════════════════ -->
-    <div class="content">
 
-        <header>
-            <h1>FIFA World Cup 2026™</h1>
-            <h2>United · Uniting the World</h2>
-            <p class="tagline">June 11 – July 19, 2026</p>
-            <span class="hero-badge">⚽ 48 Teams · 3 Nations · 1 Champion</span>
-        </header>
+    <header>
+        <h1>FIFA World Cup 2026</h1>
+        <p>USA &bull; Canada &bull; Mexico</p>
+    </header>
 
-        <!-- Host Countries -->
-        <section class="host-section">
-            <h3>🌎 Host Countries</h3>
-            <div class="host-countries">
-                <div class="host-card">
-                    <span class="flag">🇺🇸</span>
-                    <span class="country">USA</span>
-                </div>
-                <div class="host-card">
-                    <span class="flag">🇨🇦</span>
-                    <span class="country">Canada</span>
-                </div>
-                <div class="host-card">
-                    <span class="flag">🇲🇽</span>
-                    <span class="country">Mexico</span>
-                </div>
+    <main>
+        <div class="card-grid">
+            <div class="card">
+                <h2>🏟️ 16 Host Cities</h2>
+                <p>
+                    The tournament will be held across 16 cities spanning
+                    three nations — the largest World Cup in history.
+                </p>
             </div>
-        </section>
-
-        <!-- Tournament Stats -->
-        <section class="stats-section">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <span class="number">48</span>
-                    <span class="label">Teams</span>
-                </div>
-                <div class="stat-card">
-                    <span class="number">104</span>
-                    <span class="label">Matches</span>
-                </div>
-                <div class="stat-card">
-                    <span class="number">16</span>
-                    <span class="label">Groups</span>
-                </div>
-                <div class="stat-card">
-                    <span class="number">3</span>
-                    <span class="label">Host Nations</span>
-                </div>
-                <div class="stat-card">
-                    <span class="number">16</span>
-                    <span class="label">Venues</span>
-                </div>
-                <div class="stat-card">
-                    <span class="number">39</span>
-                    <span class="label">Days</span>
-                </div>
+            <div class="card">
+                <h2>⚽ 48 Teams</h2>
+                <p>
+                    For the first time, 48 national teams will compete,
+                    expanding the field from the previous 32-team format.
+                </p>
             </div>
-        </section>
-
-        <!-- Groups Preview -->
-        <section class="groups-section">
-            <h3>⚽ Group Stage Preview</h3>
-            <div class="groups-grid">
-
-                <div class="group-card">
-                    <h4>Group A</h4>
-                    <div class="team"><span class="tf">🇺🇸</span> United States</div>
-                    <div class="team"><span class="tf">🇩🇪</span> Germany</div>
-                    <div class="team"><span class="tf">🇯🇵</span> Japan</div>
-                </div>
-
-                <div class="group-card">
-                    <h4>Group B</h4>
-                    <div class="team"><span class="tf">🇧🇷</span> Brazil</div>
-                    <div class="team"><span class="tf">🇫🇷</span> France</div>
-                    <div class="team"><span class="tf">🇲🇽</span> Mexico</div>
-                </div>
-
-                <div class="group-card">
-                    <h4>Group C</h4>
-                    <div class="team"><span class="tf">🇦🇷</span> Argentina</div>
-                    <div class="team"><span class="tf">🏴󠁧󠁢󠁥󠁮󠁧󠁿</span> England</div>
-                    <div class="team"><span class="tf">🇨🇦</span> Canada</div>
-                </div>
-
-                <div class="group-card">
-                    <h4>Group D</h4>
-                    <div class="team"><span class="tf">🇪🇸</span> Spain</div>
-                    <div class="team"><span class="tf">🇵🇹</span> Portugal</div>
-                    <div class="team"><span class="tf">🇲🇦</span> Morocco</div>
-                </div>
-
-                <div class="group-card">
-                    <h4>Group E</h4>
-                    <div class="team"><span class="tf">🇳🇱</span> Netherlands</div>
-                    <div class="team"><span class="tf">🇸🇳</span> Senegal</div>
-                    <div class="team"><span class="tf">🇦🇺</span> Australia</div>
-                </div>
-
-                <div class="group-card">
-                    <h4>Group F</h4>
-                    <div class="team"><span class="tf">🇧🇪</span> Belgium</div>
-                    <div class="team"><span class="tf">🇨🇷</span> Croatia</div>
-                    <div class="team"><span class="tf">🇨🇴</span> Colombia</div>
-                </div>
-
-                <div class="group-card">
-                    <h4>Group G</h4>
-                    <div class="team"><span class="tf">🇮🇹</span> Italy</div>
-                    <div class="team"><span class="tf">🇺🇾</span> Uruguay</div>
-                    <div class="team"><span class="tf">🇰🇷</span> South Korea</div>
-                </div>
-
-                <div class="group-card">
-                    <h4>Group H</h4>
-                    <div class="team"><span class="tf">🇨🇭</span> Switzerland</div>
-                    <div class="team"><span class="tf">🇷🇸</span> Serbia</div>
-                    <div class="team"><span class="tf">🇨🇮</span> Ivory Coast</div>
-                </div>
-
+            <div class="card">
+                <h2>📅 June – July 2026</h2>
+                <p>
+                    Matches are scheduled from June through July 2026,
+                    culminating in the grand final in the United States.
+                </p>
             </div>
-        </section>
+            <div class="card">
+                <h2>🌍 Global Reach</h2>
+                <p>
+                    Billions of fans worldwide will follow the action as
+                    football's greatest prize is contested across North America.
+                </p>
+            </div>
+        </div>
+    </main>
 
-        <footer>
-            <p>© 2026 FIFA World Cup™ — USA · Canada · Mexico</p>
-            <p style="margin-top:6px;">The Greatest Show on Earth ⚽</p>
-        </footer>
-
-    </div>
+    <footer>
+        &copy; 2026 FIFA World Cup Fan Page &mdash; All trademarks belong to their respective owners.
+    </footer>
 
 </body>
 </html>

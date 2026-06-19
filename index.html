@@ -5,282 +5,816 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FIFA World Cup 2026</title>
     <style>
-        /* ── Reset & base ─────────────────────────────────────────── */
-        *, *::before, *::after {
-            box-sizing: border-box;
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
         body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0a1628 0%, #1a2f5e 50%, #0d1f3c 100%);
             min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #0a0e1a;
-            color: #f0f0f0;
+            color: #ffffff;
+            position: relative;
             overflow-x: hidden;
         }
 
-        /* ── Watermark ────────────────────────────────────────────── */
-        /*
-         * #watermark sits behind all content (z-index: -1).
-         * It is centred with the classic fixed + translate trick so it
-         * always stays visually centred regardless of scroll or viewport
-         * size.  The SVG football is rendered as an inline <svg> child
-         * so no external asset is required.
-         */
-        #watermark {
+        /* FIFA World Cup 2026 Official Ball - Azemoon Watermark */
+        /* Watermark opacity: 0.13 — updated from 0.08 -> 0.12 -> 0.13 */
+        .football-watermark {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: min(90vw, 90vh);
-            height: min(90vw, 90vh);
-            z-index: -1;
-            opacity: 0.10;          /* 0.08 – 0.12 range; tweak to taste */
-            pointer-events: none;   /* never intercept clicks / touch      */
-            user-select: none;
+            width: 780px;
+            height: 780px;
+            opacity: 0.13;
+            pointer-events: none;
+            z-index: 0;
+            border-radius: 50%;
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Adidas_Azemoon_%282026_FIFA_World_Cup_Official_Match_Ball%29.png/800px-Adidas_Azemoon_%282026_FIFA_World_Cup_Official_Match_Ball%29.png');
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: contain;
+            animation: slowRotate 60s linear infinite;
         }
 
-        #watermark svg {
-            width: 100%;
-            height: 100%;
+        @keyframes slowRotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to   { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
-        /* ── Page chrome ──────────────────────────────────────────── */
         header {
-            text-align: center;
-            padding: 3rem 1rem 1.5rem;
             position: relative;
-            z-index: 1;
+            z-index: 10;
+            text-align: center;
+            padding: 60px 20px 40px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, transparent 100%);
+        }
+
+        .fifa-logo-text {
+            font-size: 14px;
+            letter-spacing: 6px;
+            color: #c9a84c;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            font-weight: 600;
         }
 
         header h1 {
-            font-size: clamp(1.8rem, 5vw, 3.5rem);
+            font-size: clamp(2.4rem, 6vw, 5rem);
             font-weight: 900;
-            letter-spacing: 0.04em;
             text-transform: uppercase;
-            background: linear-gradient(135deg, #d4a017 0%, #f5e07a 50%, #d4a017 100%);
+            letter-spacing: 4px;
+            background: linear-gradient(135deg, #ffffff 0%, #c9a84c 50%, #ffffff 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            text-shadow: none;
+            line-height: 1.1;
         }
 
-        header p {
-            margin-top: 0.6rem;
-            font-size: clamp(0.9rem, 2.5vw, 1.25rem);
-            color: #9ab;
-            letter-spacing: 0.12em;
+        header h2 {
+            font-size: clamp(1rem, 2.5vw, 1.6rem);
+            font-weight: 300;
+            color: #a8c4e8;
+            margin-top: 12px;
+            letter-spacing: 3px;
+        }
+
+        .host-countries {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .host-country {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(201, 168, 76, 0.4);
+            border-radius: 30px;
+            padding: 8px 20px;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            color: #c9a84c;
             text-transform: uppercase;
+            font-weight: 600;
         }
 
-        main {
+        .host-country .flag {
+            font-size: 1.4rem;
+        }
+
+        .countdown-section {
             position: relative;
-            z-index: 1;
-            max-width: 900px;
-            margin: 2rem auto;
-            padding: 0 1.5rem 4rem;
+            z-index: 10;
+            text-align: center;
+            padding: 50px 20px;
         }
 
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
+        .countdown-label {
+            font-size: 0.85rem;
+            letter-spacing: 5px;
+            color: #a8c4e8;
+            text-transform: uppercase;
+            margin-bottom: 30px;
         }
 
-        .card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.10);
-            border-radius: 1rem;
-            padding: 1.75rem 1.5rem;
-            backdrop-filter: blur(6px);
-            transition: transform 0.2s ease, border-color 0.2s ease;
+        .countdown-grid {
+            display: flex;
+            justify-content: center;
+            gap: clamp(15px, 3vw, 40px);
+            flex-wrap: wrap;
         }
 
-        .card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(212, 160, 23, 0.5);
+        .countdown-item {
+            background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.03));
+            border: 1px solid rgba(201, 168, 76, 0.3);
+            border-radius: 16px;
+            padding: 25px 30px;
+            min-width: 100px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
-        .card h2 {
-            font-size: 1.1rem;
+        .countdown-number {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            color: #c9a84c;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .countdown-unit {
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            color: #a8c4e8;
+            text-transform: uppercase;
+            margin-top: 8px;
+        }
+
+        /* Official Ball Showcase Section */
+        .ball-showcase {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .ball-showcase h3 {
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #c9a84c;
+            margin-bottom: 10px;
             font-weight: 700;
-            margin-bottom: 0.5rem;
-            color: #f5e07a;
         }
 
-        .card p {
-            font-size: 0.92rem;
-            line-height: 1.6;
-            color: #aab;
+        .ball-showcase p {
+            font-size: 0.9rem;
+            color: #a8c4e8;
+            letter-spacing: 2px;
+            margin-bottom: 40px;
+        }
+
+        .ball-display-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 50px;
+            flex-wrap: wrap;
+        }
+
+        .ball-image-wrapper {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ball-glow-ring {
+            position: absolute;
+            inset: -15px;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                #c9a84c,
+                #1a4a8a,
+                #e8352a,
+                #c9a84c
+            );
+            opacity: 0.5;
+            animation: spinGlow 8s linear infinite;
+            filter: blur(8px);
+        }
+
+        @keyframes spinGlow {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+
+        .ball-image-wrapper img.official-ball {
+            width: 300px;
+            height: 300px;
+            object-fit: contain;
+            position: relative;
+            z-index: 2;
+            filter: drop-shadow(0 20px 40px rgba(0,0,0,0.6));
+            animation: floatBall 4s ease-in-out infinite;
+            border-radius: 50%;
+        }
+
+        @keyframes floatBall {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50%       { transform: translateY(-18px) rotate(5deg); }
+        }
+
+        .ball-info {
+            max-width: 380px;
+            text-align: left;
+        }
+
+        .ball-name {
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #c9a84c, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+            line-height: 1.1;
+        }
+
+        .ball-subtitle {
+            font-size: 0.85rem;
+            color: #a8c4e8;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 6px;
+            margin-bottom: 24px;
+        }
+
+        .ball-features {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .ball-features li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 0.9rem;
+            color: #d0dff0;
+            line-height: 1.5;
+        }
+
+        .ball-features li::before {
+            content: '◆';
+            color: #c9a84c;
+            font-size: 0.6rem;
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+
+        .ball-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #c9a84c, #8b6914);
+            color: #0a1628;
+            font-size: 0.7rem;
+            font-weight: 900;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 6px 16px;
+            border-radius: 4px;
+            margin-top: 24px;
+        }
+
+        .stats-section {
+            position: relative;
+            z-index: 10;
+            padding: 50px 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .stat-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.07), rgba(255,255,255,0.02));
+            border: 1px solid rgba(201, 168, 76, 0.25);
+            border-radius: 16px;
+            padding: 30px 24px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(201, 168, 76, 0.6);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #c9a84c;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            color: #a8c4e8;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+
+        .divider {
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #c9a84c, transparent);
+            margin: 20px auto;
         }
 
         footer {
-            text-align: center;
-            padding: 1.5rem;
-            font-size: 0.8rem;
-            color: #556;
             position: relative;
-            z-index: 1;
+            z-index: 10;
+            text-align: center;
+            padding: 30px 20px;
+            border-top: 1px solid rgba(201, 168, 76, 0.2);
+            color: #6080a0;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+        }
+
+        footer span {
+            color: #c9a84c;
+        }
+
+        @media (max-width: 768px) {
+            .football-watermark {
+                width: 480px;
+                height: 480px;
+            }
+
+            .ball-display-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .ball-info {
+                text-align: center;
+            }
+
+            .ball-features li {
+                justify-content: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .football-watermark {
+                width: 340px;
+                height: 340px;
+            }
+
+            .countdown-item {
+                padding: 18px 20px;
+                min-width: 75px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- ═══════════════════════════════════════════════════════════
-         WATERMARK — FIFA World Cup 2026 official football (SVG)
-         Inline SVG avoids any external dependency and scales
-         perfectly to any viewport.
-    ════════════════════════════════════════════════════════════════ -->
-    <div id="watermark" aria-hidden="true">
-        <!--
-            Classic 32-panel Adidas-style football with the
-            traditional black-and-white pentagon / hexagon pattern.
-            Colour is intentionally white/light-grey so the CSS
-            opacity + dark background give the correct watermark tone.
-        -->
-        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"
-             role="img" aria-label="FIFA World Cup 2026 Football Watermark">
-            <title>FIFA World Cup 2026 Football</title>
+    <!--
+        FIFA World Cup 2026 Official "Azemoon" Ball — Watermark Background
+        Opacity: 0.13 (updated history: 0.08 -> 0.12 -> 0.13)
+        Size: 780px (enlarged from earlier versions)
+        Image: Official Azemoon ball via Wikimedia Commons (public domain / freely licensed)
+        URL: https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Adidas_Azemoon_%282026_FIFA_World_Cup_Official_Match_Ball%29.png/800px-Adidas_Azemoon_%282026_FIFA_World_Cup_Official_Match_Ball%29.png
+        Positioning: position:fixed, top:50%, left:50%, transform:translate(-50%,-50%) — centred
+        Background: background-image with background-position:center, background-size:contain
+        Interaction: pointer-events:none so watermark never blocks foreground content
+        Z-index: 0 (header and all content sections use z-index:10)
+    -->
+    <div
+        class="football-watermark"
+        aria-hidden="true"
+        role="presentation"
+    ></div>
 
-            <!-- ── Outer circle (ball silhouette) ── -->
-            <circle cx="100" cy="100" r="95"
-                    fill="none" stroke="#ffffff" stroke-width="3"/>
-
-            <!-- ── Ball filled background ── -->
-            <circle cx="100" cy="100" r="94" fill="#e8e8e8"/>
-
-            <!-- ══════════════════════════════════════════════════
-                 Classic Telstar-style panel layout
-                 5 black pentagons + surrounding hexagons
-                 Positions calculated for a standard football.
-            ═══════════════════════════════════════════════════════ -->
-
-            <!-- Central top pentagon -->
-            <polygon points="100,18 114,28 109,44 91,44 86,28"
-                     fill="#1a1a1a"/>
-
-            <!-- Pentagon – lower-left -->
-            <polygon points="38,65 54,60 62,74 52,85 36,80"
-                     fill="#1a1a1a"/>
-
-            <!-- Pentagon – lower-right -->
-            <polygon points="162,65 146,60 138,74 148,85 164,80"
-                     fill="#1a1a1a"/>
-
-            <!-- Pentagon – bottom-left -->
-            <polygon points="58,138 66,122 82,124 86,140 72,150"
-                     fill="#1a1a1a"/>
-
-            <!-- Pentagon – bottom-right -->
-            <polygon points="142,138 134,122 118,124 114,140 128,150"
-                     fill="#1a1a1a"/>
-
-            <!-- ── Seam lines connecting panels ── -->
-            <!-- top pentagon → lower-left pentagon -->
-            <line x1="86" y1="28" x2="54" y2="60"
-                  stroke="#555" stroke-width="1.5"/>
-            <!-- top pentagon → lower-right pentagon -->
-            <line x1="114" y1="28" x2="146" y2="60"
-                  stroke="#555" stroke-width="1.5"/>
-            <!-- top pentagon bottom edge → bottom-left -->
-            <line x1="91" y1="44" x2="82" y2="124"
-                  stroke="#555" stroke-width="1.5"/>
-            <!-- top pentagon bottom edge → bottom-right -->
-            <line x1="109" y1="44" x2="118" y2="124"
-                  stroke="#555" stroke-width="1.5"/>
-            <!-- lower-left → bottom-left -->
-            <line x1="52" y1="85" x2="66" y2="122"
-                  stroke="#555" stroke-width="1.5"/>
-            <!-- lower-right → bottom-right -->
-            <line x1="148" y1="85" x2="134" y2="122"
-                  stroke="#555" stroke-width="1.5"/>
-            <!-- bottom two pentagons connected -->
-            <line x1="86" y1="140" x2="114" y2="140"
-                  stroke="#555" stroke-width="1.5"/>
-            <!-- lower-left to lower-right via centre -->
-            <line x1="62" y1="74" x2="138" y2="74"
-                  stroke="#555" stroke-width="1.5"/>
-
-            <!-- ── "FIFA WORLD CUP" arc text at top ── -->
-            <path id="topArc"
-                  d="M 30,100 A 70,70 0 0,1 170,100"
-                  fill="none"/>
-            <text font-family="'Arial Black', Arial, sans-serif"
-                  font-size="11" font-weight="900"
-                  fill="#1a1a1a" letter-spacing="2">
-                <textPath href="#topArc" startOffset="10%">
-                    FIFA WORLD CUP
-                </textPath>
-            </text>
-
-            <!-- ── "2026" bold centred ── -->
-            <text x="100" y="108"
-                  text-anchor="middle"
-                  dominant-baseline="middle"
-                  font-family="'Arial Black', Arial, sans-serif"
-                  font-size="22" font-weight="900"
-                  fill="#1a1a1a" letter-spacing="3">
-                2026
-            </text>
-
-            <!-- ── "USA · CANADA · MEXICO" arc text at bottom ── -->
-            <path id="bottomArc"
-                  d="M 28,108 A 72,72 0 0,0 172,108"
-                  fill="none"/>
-            <text font-family="'Arial Black', Arial, sans-serif"
-                  font-size="8.5" font-weight="700"
-                  fill="#1a1a1a" letter-spacing="1.5">
-                <textPath href="#bottomArc" startOffset="8%">
-                    USA · CANADA · MEXICO
-                </textPath>
-            </text>
-        </svg>
-    </div>
-    <!-- ── end watermark ────────────────────────────────────────── -->
-
-
+    <!-- Header -->
     <header>
-        <h1>FIFA World Cup 2026</h1>
-        <p>USA &bull; Canada &bull; Mexico</p>
-    </header>
-
-    <main>
-        <div class="card-grid">
-            <div class="card">
-                <h2>🏟️ 16 Host Cities</h2>
-                <p>
-                    The tournament will be held across 16 cities spanning
-                    three nations — the largest World Cup in history.
-                </p>
+        <div class="fifa-logo-text">FIFA</div>
+        <h1>World Cup 2026™</h1>
+        <h2>USA · Canada · México</h2>
+        <div class="host-countries">
+            <div class="host-country">
+                <span class="flag">🇺🇸</span>
+                <span>United States</span>
             </div>
-            <div class="card">
-                <h2>⚽ 48 Teams</h2>
-                <p>
-                    For the first time, 48 national teams will compete,
-                    expanding the field from the previous 32-team format.
-                </p>
+            <div class="host-country">
+                <span class="flag">🇨🇦</span>
+                <span>Canada</span>
             </div>
-            <div class="card">
-                <h2>📅 June – July 2026</h2>
-                <p>
-                    Matches are scheduled from June through July 2026,
-                    culminating in the grand final in the United States.
-                </p>
-            </div>
-            <div class="card">
-                <h2>🌍 Global Reach</h2>
-                <p>
-                    Billions of fans worldwide will follow the action as
-                    football's greatest prize is contested across North America.
-                </p>
+            <div class="host-country">
+                <span class="flag">🇲🇽</span>
+                <span>México</span>
             </div>
         </div>
-    </main>
+    </header>
 
+    <!-- Countdown Timer -->
+    <section class="countdown-section">
+        <div class="countdown-label">Tournament Begins</div>
+        <div class="countdown-grid">
+            <div class="countdown-item">
+                <div class="countdown-number" id="days">000</div>
+                <div class="countdown-unit">Days</div>
+            </div>
+            <div class="countdown-item">
+                <div class="countdown-number" id="hours">00</div>
+                <div class="countdown-unit">Hours</div>
+            </div>
+            <div class="countdown-item">
+                <div class="countdown-number" id="minutes">00</div>
+                <div class="countdown-unit">Minutes</div>
+            </div>
+            <div class="countdown-item">
+                <div class="countdown-number" id="seconds">00</div>
+                <div class="countdown-unit">Seconds</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Official Ball Showcase -->
+    <section class="ball-showcase">
+        <h3>Official Match Ball</h3>
+        <p>FIFA World Cup 2026™ · Adidas Azemoon</p>
+
+        <div class="ball-display-container">
+            <!--
+                Official Azemoon ball showcase image.
+                Primary: Wikimedia Commons freely-licensed image of the Azemoon ball.
+                Fallback chain handled by handleShowcaseBallError().
+            -->
+            <div class="ball-image-wrapper">
+                <div class="ball-glow-ring"></div>
+                <img
+                    class="official-ball"
+                    id="showcase-ball"
+                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Adidas_Azemoon_%282026_FIFA_World_Cup_Official_Match_Ball%29.png/640px-Adidas_Azemoon_%282026_FIFA_World_Cup_Official_Match_Ball%29.png"
+                    alt="Adidas Azemoon — FIFA World Cup 2026 Official Match Ball"
+                    onerror="handleShowcaseBallError(this)"
+                    loading="lazy"
+                />
+            </div>
+
+            <!-- Ball Info -->
+            <div class="ball-info">
+                <div class="ball-name">Azemoon</div>
+                <div class="ball-subtitle">Official Match Ball · FIFA World Cup 2026™</div>
+                <ul class="ball-features">
+                    <li>Designed by Adidas — official FIFA World Cup 2026 match ball</li>
+                    <li>Name "Azemoon" means "sky" in Dari, representing unity and ambition</li>
+                    <li>Features Adidas' latest SPEEDSHELL technology for precision flight</li>
+                    <li>Inspired by the cultures and landscapes of the three host nations</li>
+                    <li>CRT-CORE technology for consistent energy return and feel</li>
+                    <li>Bold geometric patterns reflecting North American design heritage</li>
+                </ul>
+                <span class="ball-badge">Official Match Ball</span>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Tournament Stats -->
+    <section class="stats-section">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">48</div>
+                <div class="stat-label">Teams</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">104</div>
+                <div class="stat-label">Matches</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">16</div>
+                <div class="stat-label">Venues</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">3</div>
+                <div class="stat-label">Host Nations</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">39</div>
+                <div class="stat-label">Match Days</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
     <footer>
-        &copy; 2026 FIFA World Cup Fan Page &mdash; All trademarks belong to their respective owners.
+        <p>
+            <span>FIFA World Cup 2026™</span> · June 11 – July 19, 2026 ·
+            USA · Canada · México
+        </p>
+        <p style="margin-top:10px;">
+            Official Ball: <span>Adidas Azemoon</span>
+        </p>
+        <p style="margin-top:6px; font-size:0.7rem; opacity:0.6;">
+            Watermark opacity: 0.13 · Size: 780px · Image: Wikimedia Commons (CC licensed)
+        </p>
     </footer>
 
+    <script>
+        'use strict';
+
+        /**
+         * Target date for FIFA World Cup 2026 opening match.
+         * June 11, 2026 — Azteca Stadium, Mexico City (UTC-6).
+         * @type {Date}
+         */
+        const WORLD_CUP_DATE = new Date('2026-06-11T20:00:00-06:00');
+
+        /**
+         * Current watermark opacity value (history: 0.08 → 0.12 → 0.13).
+         * @type {number}
+         */
+        const WATERMARK_OPACITY = 0.13;
+
+        /**
+         * Official Azemoon ball Wikimedia Commons image URL used as watermark background-image.
+         * @type {string}
+         */
+        const WATERMARK_IMAGE_URL = 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Adidas_Azemoon_%282026_FIFA_World_Cup_Official_Match_Ball%29.png/800px-Adidas_Azemoon_%282026_FIFA_World_Cup_Official_Match_Ball%29.png';
+
+        /**
+         * Watermark image URLs in priority order.
+         * Primary: Wikimedia Commons official Azemoon ball image (800px).
+         * @type {string[]}
+         */
+        const WATERMARK_IMAGE_URLS = [
+            WATERMARK_IMAGE_URL,
+        ];
+
+        /**
+         * Showcase ball image fallback URLs tried in order after primary fails.
+         * @type {string[]}
+         */
+        const SHOWCASE_FALLBACK_URLS = [
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Adidas_Azemoon_%282026_FIFA_World_Cup_Official_Match_Ball%29.png/640px-Adidas_Azemoon_%282026_FIFA_World_Cup_Official_Match_Ball%29.png',
+            'https://www.fifplay.com/img/public/2026-fifa-world-cup-ball.jpg',
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Campeones_Cup_Adidas_ball.jpg/640px-Campeones_Cup_Adidas_ball.jpg',
+        ];
+
+        /**
+         * Minimum digit length for days in the countdown display.
+         * @type {number}
+         */
+        const DAYS_MIN_DIGITS = 3;
+
+        /**
+         * Minimum digit length for hours, minutes, seconds in the countdown display.
+         * @type {number}
+         */
+        const TIME_MIN_DIGITS = 2;
+
+        /**
+         * Milliseconds per second.
+         * @type {number}
+         */
+        const MS_PER_SECOND = 1000;
+
+        /**
+         * Seconds per minute.
+         * @type {number}
+         */
+        const SECONDS_PER_MINUTE = 60;
+
+        /**
+         * Seconds per hour.
+         * @type {number}
+         */
+        const SECONDS_PER_HOUR = 3600;
+
+        /**
+         * Seconds per day.
+         * @type {number}
+         */
+        const SECONDS_PER_DAY = 86400;
+
+        /**
+         * Pads a number to a minimum number of digits with leading zeros.
+         * @param {number} value - The non-negative integer to pad.
+         * @param {number} [minDigits=2] - Minimum digit length.
+         * @returns {string} Zero-padded string.
+         * @throws {Error} If value is not a finite number.
+         */
+        function padNumber(value, minDigits = TIME_MIN_DIGITS) {
+            if (typeof value !== 'number' || !isFinite(value) || isNaN(value)) {
+                throw new Error(`padNumber expects a finite number, got: ${value}`);
+            }
+            return String(Math.max(0, Math.floor(value))).padStart(minDigits, '0');
+        }
+
+        /**
+         * Calculates the remaining time from now until the target date.
+         * @param {Date} targetDate - The future date to count down to.
+         * @returns {{ days: number, hours: number, minutes: number, seconds: number, expired: boolean }}
+         * @throws {Error} If targetDate is not a valid Date instance.
+         */
+        function calculateTimeRemaining(targetDate) {
+            if (!(targetDate instanceof Date) || isNaN(targetDate.getTime())) {
+                throw new Error('calculateTimeRemaining requires a valid Date object');
+            }
+
+            const now = Date.now();
+            const totalMs = targetDate.getTime() - now;
+
+            if (totalMs <= 0) {
+                return { days: 0, hours: 0, minutes: 0, seconds: 0, expired: true };
+            }
+
+            const totalSeconds = Math.floor(totalMs / MS_PER_SECOND);
+            const days    = Math.floor(totalSeconds / SECONDS_PER_DAY);
+            const hours   = Math.floor((totalSeconds % SECONDS_PER_DAY) / SECONDS_PER_HOUR);
+            const minutes = Math.floor((totalSeconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE);
+            const seconds = totalSeconds % SECONDS_PER_MINUTE;
+
+            return { days, hours, minutes, seconds, expired: false };
+        }
+
+        /**
+         * Updates the countdown display elements in the DOM.
+         * @param {{ days: number, hours: number, minutes: number, seconds: number, expired: boolean }} timeData
+         */
+        function updateCountdownDisplay(timeData) {
+            const elementIds = ['days', 'hours', 'minutes', 'seconds'];
+            const elements = {};
+
+            for (const id of elementIds) {
+                elements[id] = document.getElementById(id);
+            }
+
+            try {
+                if (timeData.expired) {
+                    for (const el of Object.values(elements)) {
+                        if (el) el.textContent = '00';
+                    }
+                    return;
+                }
+
+                if (elements.days)    elements.days.textContent    = padNumber(timeData.days, DAYS_MIN_DIGITS);
+                if (elements.hours)   elements.hours.textContent   = padNumber(timeData.hours, TIME_MIN_DIGITS);
+                if (elements.minutes) elements.minutes.textContent = padNumber(timeData.minutes, TIME_MIN_DIGITS);
+                if (elements.seconds) elements.seconds.textContent = padNumber(timeData.seconds, TIME_MIN_DIGITS);
+            } catch (error) {
+                console.error('Failed to update countdown display:', error);
+            }
+        }
+
+        /**
+         * Starts the countdown timer, ticking every second.
+         * @param {Date} targetDate - The future date to count down to.
+         * @returns {number} The setInterval ID (can be used to stop the timer).
+         * @throws {Error} If targetDate is not a valid Date instance.
+         */
+        function startCountdown(targetDate) {
+            if (!(targetDate instanceof Date) || isNaN(targetDate.getTime())) {
+                throw new Error('startCountdown requires a valid Date object');
+            }
+
+            const tick = () => {
+                try {
+                    const timeData = calculateTimeRemaining(targetDate);
+                    updateCountdownDisplay(timeData);
+                } catch (error) {
+                    console.error('Countdown tick error:', error);
+                }
+            };
+
+            tick(); // Render immediately on call, then every second
+            return setInterval(tick, MS_PER_SECOND);
+        }
+
+        /**
+         * Handles showcase official ball image load failure.
+         * Tries each URL in SHOWCASE_FALLBACK_URLS in sequence, then renders an SVG placeholder.
+         * @param {HTMLImageElement} imgElement - The failed image element.
+         */
+        function handleShowcaseBallError(imgElement) {
+            try {
+                if (!(imgElement instanceof HTMLImageElement)) {
+                    throw new TypeError('handleShowcaseBallError expects an HTMLImageElement');
+                }
+
+                const rawIndex = imgElement.getAttribute('data-fallback-index');
+                const nextIndex = rawIndex !== null ? parseInt(rawIndex, 10) + 1 : 0;
+
+                if (nextIndex < SHOWCASE_FALLBACK_URLS.length) {
+                    imgElement.setAttribute('data-fallback-index', String(nextIndex));
+                    imgElement.src = SHOWCASE_FALLBACK_URLS[nextIndex];
+                } else {
+                    // All fallback URLs exhausted — replace with SVG placeholder
+                    imgElement.style.display = 'none';
+                    const wrapper = imgElement.closest('.ball-image-wrapper');
+                    if (wrapper) {
+                        const svgPlaceholder = createBallSvgPlaceholder();
+                        wrapper.appendChild(svgPlaceholder);
+                    }
+                }
+            } catch (error) {
+                console.warn('Could not load showcase ball fallback:', error);
+            }
+        }
+
+        /**
+         * Creates a detailed inline SVG football element as a last-resort placeholder.
+         * @returns {SVGElement} A fully styled SVG football element.
+         */
+        function createBallSvgPlaceholder() {
+            const SVG_NS = 'http://www.w3.org/2000/svg';
+            const BALL_SIZE_PX = '300';
+
+            const svg = document.createElementNS(SVG_NS, 'svg');
+            svg.setAttribute('viewBox', '0 0 200 200');
+            svg.setAttribute('width', BALL_SIZE_PX);
+            svg.setAttribute('height', BALL_SIZE_PX);
+            svg.setAttribute('aria-label', 'FIFA World Cup 2026 Official Ball Placeholder');
+            svg.style.cssText = 'position:relative;z-index:2;animation:floatBall 4s ease-in-out infinite;';
+
+            svg.innerHTML = `
+                <defs>
+                    <radialGradient id="ballGrad" cx="40%" cy="35%" r="60%">
+                        <stop offset="0%"   stop-color="#ffffff"/>
+                        <stop offset="60%"  stop-color="#e8e8e8"/>
+                        <stop offset="100%" stop-color="#cccccc"/>
+                    </radialGradient>
+                    <radialGradient id="shineGrad" cx="35%" cy="30%" r="40%">
+                        <stop offset="0%"   stop-color="rgba(255,255,255,0.8)"/>
+                        <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+                    </radialGradient>
+                </defs>
+                <circle cx="100" cy="100" r="95" fill="url(#ballGrad)" stroke="#bbbbbb" stroke-width="1.5"/>
+                <polygon points="100,55 130,75 120,108 80,108 70,75"   fill="#1a1a2e"/>
+                <polygon points="100,10 118,22 112,44 88,44 82,22"     fill="#1a1a2e"/>
+                <polygon points="160,42 170,65 150,80 132,68 140,46"   fill="#1a1a2e"/>
+                <polygon points="175,105 175,128 155,138 140,122 150,100" fill="#1a1a2e"/>
+                <polygon points="140,158 130,178 108,175 105,152 125,140" fill="#1a1a2e"/>
+                <polygon points="60,158 75,140 95,152 92,175 70,178"   fill="#1a1a2e"/>
+                <polygon points="25,105 50,100 60,122 45,138 25,128"   fill="#1a1a2e"/>
+                <polygon points="40,42 60,46 68,68 50,80 30,65"        fill="#1a1a2e"/>
+                <circle cx="100" cy="100" r="95" fill="url(#shineGrad)"/>
+                <circle cx="100" cy="100" r="95" fill="none" stroke="#aaaaaa" stroke-width="2"/>
+            `;
+
+            return svg;
+        }
+
+        // ── Bootstrap ────────────────────────────────────────────────────────────────
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                startCountdown(WORLD_CUP_DATE);
+            } catch (error) {
+                console.error('Failed to start countdown:', error);
+            }
+        });
+
+        // CommonJS export shim — enables unit testing without a bundler
+        if (typeof module !== 'undefined' && module.exports) {
+            module.exports = {
+                padNumber,
+                calculateTimeRemaining,
+                updateCountdownDisplay,
+                startCountdown,
+                handleShowcaseBallError,
+                createBallSvgPlaceholder,
+                WORLD_CUP_DATE,
+                WATERMARK_OPACITY,
+                WATERMARK_IMAGE_URL,
+                WATERMARK_IMAGE_URLS,
+                SHOWCASE_FALLBACK_URLS,
+            };
+        }
+    </script>
 </body>
 </html>

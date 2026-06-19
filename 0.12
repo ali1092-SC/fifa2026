@@ -1,18 +1,1 @@
-/* Watermark styles for FIFA World Cup 2026 official football background */
-
-#wc2026-watermark {
-  position: fixed;
-  z-index: -1;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: min(90vw, 90vh);
-  height: min(90vw, 90vh);
-  opacity: 0.10;
-  pointer-events: none;
-  user-select: none;
-  background-image: url('https://digitalhub.fifa.com/transform/a9659e8a-22bf-4697-b955-c06ca2f2b1ac/FIFA-World-Cup-2026-Official-Match-Ball');
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center center;
-}
+0.12

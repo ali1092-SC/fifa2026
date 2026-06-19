@@ -1,799 +1,363 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FIFA 2026 World Cup</title>
-    <!--
-    README: Animated Football Watermark Feature
-    ===========================================
-    This page features an animated football (soccer ball) watermark layer in the background.
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FIFA 2026 Ball Animation</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-    Feature Details:
-    - Ball Count: 42 total floating balls (configurable via WATERMARK_CONFIG.BALL_COUNT)
-    - Static seed balls: 6 HTML-defined .watermark-ball elements (IDs: watermark-ball-1 through watermark-ball-6)
-    - Size Range: 18px – 72px (configurable via SIZE_MIN / SIZE_MAX)
-    - Animation Duration: 14s – 40s per ball (configurable via DURATION_MIN / DURATION_MAX)
-    - Staggered delays: Each ball has a unique negative animation-delay spread over 35s
-    - Unique top/left positions: Each ball is placed at a distinct viewport position
-    - animation-iteration-count: infinite — all balls loop continuously
-    - pointer-events: none — watermark never blocks user interaction
-    - z-index: 0 — watermark stays behind all content (z-index: 1+)
+    body {
+      background: #0a1628;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-    Parameter Tweaking:
-    - Edit WATERMARK_CONFIG in the <script> block to change ball count, sizes, speeds, opacity, drift
-    - BALL_COUNT: total number of animated balls
-    - SIZE_MIN / SIZE_MAX: font-size range in px
-    - DURATION_MIN / DURATION_MAX: animation cycle length in seconds
-    - OPACITY_MIN / OPACITY_MAX: transparency range (0–1)
-    - DRIFT_X_MAX: max horizontal drift in px
-    - DRIFT_Y.min / DRIFT_Y.max: vertical travel range in px
-    - ROTATION_MAX: maximum rotation in degrees
-    - STAGGER_WINDOW: seconds over which animation delays are distributed
-    -->
-    <style>
-        /* ─── Reset & Base ─────────────────────────────────────────────── */
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    #field {
+      position: relative;
+      width: 800px;
+      height: 500px;
+      background: radial-gradient(ellipse at center, #2d7a2d 0%, #1a5c1a 60%, #0f3d0f 100%);
+      border: 3px solid #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 0 60px rgba(0, 200, 0, 0.25);
+    }
 
-        :root {
-            --gold:   #FFD700;
-            --dark:   #0a0a1a;
-            --accent: #1a1a3e;
-            --white:  #ffffff;
-            --red:    #e63946;
-        }
+    #field::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 3px;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.6);
+    }
 
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow-x: hidden;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--dark);
-            color: var(--white);
-        }
+    #field::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 120px;
+      height: 120px;
+      border: 3px solid rgba(255, 255, 255, 0.6);
+      border-radius: 50%;
+    }
 
-        /* ─── Watermark Layer ───────────────────────────────────────────── */
-        /*
-         * .watermark-layer / #watermark-layer:
-         *   Fixed overlay covering the full viewport.
-         *   pointer-events: none  — never intercepts clicks or keyboard events.
-         *   z-index: 0            — sits below all content sections (z-index: 1+).
-         *   overflow: hidden      — prevents balls drifting outside causing scrollbars.
-         */
-        #watermark-layer,
-        .watermark-layer {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
-        }
+    #ball {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.55) 0%, transparent 55%),
+        repeating-conic-gradient(#fff 0deg 30deg, #222 30deg 60deg);
+      background-blend-mode: normal;
+      box-shadow:
+        inset -4px -4px 10px rgba(0, 0, 0, 0.5),
+        inset 2px 2px 6px rgba(255, 255, 255, 0.3),
+        0 4px 12px rgba(0, 0, 0, 0.5);
+      animation:
+        ballPulse 2.3s ease-in-out infinite,
+        ballSpin  0.8s linear infinite;
+      will-change: transform;
+    }
 
-        /*
-         * .watermark-ball:
-         *   Individual animated football element.
-         *   animation-iteration-count: infinite — loops continuously forever.
-         *   pointer-events: none  — never blocks user interaction.
-         *   Each element has a unique data-ball-index, unique top/left, unique animation-delay,
-         *   and unique animation-duration applied via inline style.
-         */
-        .watermark-ball {
-            position: absolute;
-            opacity: 0.08;
-            will-change: transform;
-            animation-name: floatBall;
-            animation-timing-function: linear;
-            animation-iteration-count: infinite;
-            animation-fill-mode: both;
-            pointer-events: none;
-            user-select: none;
-            filter: grayscale(30%);
-        }
+    @keyframes ballPulse {
+      0%   { transform: scale(1);   }
+      50%  { transform: scale(1.1); }
+      100% { transform: scale(1);   }
+    }
 
-        /*
-         * @keyframes floatBall:
-         *   Circular / drifting motion path using CSS custom properties per element.
-         *   0° → 360° rotation produces a continuous circular spin.
-         *   translate moves the ball from its start position to its end position.
-         *   opacity fades in (0→8%) and fades out (92%→100%) for smooth appearance.
-         */
-        @keyframes floatBall {
-            0% {
-                transform:
-                    translate(var(--tx-start, 0px), var(--ty-start, 0px))
-                    rotate(0deg)
-                    scale(var(--scale, 1));
-                opacity: 0;
-            }
-            8%  { opacity: var(--max-opacity, 0.08); }
-            92% { opacity: var(--max-opacity, 0.08); }
-            100% {
-                transform:
-                    translate(var(--tx-end, 50px), var(--ty-end, 50px))
-                    rotate(var(--rot-end, 360deg))
-                    scale(var(--scale, 1));
-                opacity: 0;
-            }
-        }
+    @keyframes ballSpin {
+      0%   { transform: rotate(0deg);   }
+      100% { transform: rotate(360deg); }
+    }
 
-        /* ─── Hero Section ──────────────────────────────────────────────── */
-        #hero {
-            position: relative;
-            z-index: 1;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 2rem;
-            background: radial-gradient(ellipse at center, #1a1a3e 0%, #0a0a1a 70%);
-        }
+    #ui {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+    }
 
-        #hero h1 {
-            font-size: clamp(2.5rem, 8vw, 6rem);
-            font-weight: 900;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            background: linear-gradient(135deg, var(--gold) 0%, #fff8b0 50%, var(--gold) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: none;
-        }
+    .btn {
+      padding: 6px 18px;
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: background 0.2s;
+      user-select: none;
+    }
 
-        #hero h2 {
-            font-size: clamp(1rem, 3vw, 1.8rem);
-            font-weight: 300;
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-            color: rgba(255,255,255,0.75);
-            margin-top: 0.5rem;
-        }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
 
-        .hero-badge {
-            margin: 2rem auto;
-            width: clamp(120px, 20vw, 200px);
-            height: clamp(120px, 20vw, 200px);
-            border-radius: 50%;
-            border: 3px solid var(--gold);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: clamp(3rem, 10vw, 7rem);
-            box-shadow: 0 0 40px rgba(255,215,0,0.25), inset 0 0 40px rgba(255,215,0,0.05);
-            animation: pulse 3s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 40px rgba(255,215,0,0.25), inset 0 0 40px rgba(255,215,0,0.05); }
-            50%       { box-shadow: 0 0 80px rgba(255,215,0,0.5),  inset 0 0 60px rgba(255,215,0,0.1); }
-        }
-
-        .host-countries {
-            display: flex;
-            gap: 1.5rem;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-top: 1.5rem;
-        }
-
-        .host-flag {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,215,0,0.3);
-            border-radius: 999px;
-            padding: 0.4rem 1.2rem;
-            font-size: 1rem;
-            font-weight: 600;
-            letter-spacing: 0.08em;
-            transition: background 0.3s, border-color 0.3s;
-        }
-
-        .host-flag:hover {
-            background: rgba(255,215,0,0.12);
-            border-color: var(--gold);
-        }
-
-        .cta-btn {
-            margin-top: 2.5rem;
-            padding: 0.9rem 2.8rem;
-            font-size: 1.1rem;
-            font-weight: 700;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            background: linear-gradient(135deg, #c8960c, var(--gold), #c8960c);
-            color: #0a0a1a;
-            border: none;
-            border-radius: 999px;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 4px 24px rgba(255,215,0,0.35);
-        }
-
-        .cta-btn:hover  { transform: translateY(-3px) scale(1.04); box-shadow: 0 8px 32px rgba(255,215,0,0.5); }
-        .cta-btn:active { transform: translateY(0)   scale(0.98); }
-
-        /* ─── Info Cards ────────────────────────────────────────────────── */
-        #info {
-            position: relative;
-            z-index: 1;
-            padding: 4rem 2rem;
-            background: var(--accent);
-        }
-
-        #info h3 {
-            text-align: center;
-            font-size: clamp(1.5rem, 4vw, 2.5rem);
-            color: var(--gold);
-            margin-bottom: 2.5rem;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-        }
-
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1.5rem;
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        .card {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,215,0,0.2);
-            border-radius: 1rem;
-            padding: 2rem 1.5rem;
-            text-align: center;
-            transition: transform 0.3s, border-color 0.3s, background 0.3s;
-        }
-
-        .card:hover {
-            transform: translateY(-6px);
-            border-color: var(--gold);
-            background: rgba(255,215,0,0.06);
-        }
-
-        .card .icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
-        .card h4    { font-size: 1.1rem; font-weight: 700; color: var(--gold); margin-bottom: 0.4rem; }
-        .card p     { font-size: 0.9rem; color: rgba(255,255,255,0.65); line-height: 1.6; }
-
-        /* ─── Footer ────────────────────────────────────────────────────── */
-        footer {
-            position: relative;
-            z-index: 1;
-            text-align: center;
-            padding: 2rem;
-            background: #05050f;
-            color: rgba(255,255,255,0.35);
-            font-size: 0.8rem;
-            letter-spacing: 0.08em;
-        }
-
-        footer span { color: var(--gold); }
-    </style>
+    #score {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #fff;
+      font-size: 14px;
+      letter-spacing: 1px;
+      opacity: 0.8;
+    }
+  </style>
 </head>
 <body>
 
-    <!-- ─── Watermark Football Layer ──────────────────────────────────────────
-         Six seed .watermark-ball elements are declared directly in HTML so that
-         static analysis tools can verify:
-           • 3–8 elements with the .watermark-ball class exist in markup
-           • Each has a unique id (watermark-ball-1 … watermark-ball-6)
-           • Each has unique, non-uniform top / left positions
-           • Each has a unique animation-delay (staggered, non-synchronized)
-           • animation-iteration-count: infinite is applied via the CSS class
-           • pointer-events: none prevents obstruction of interactive content
-         Additional balls (up to BALL_COUNT total) are appended by the JS below.
-    ──────────────────────────────────────────────────────────────────────── -->
-    <div id="watermark-layer" class="watermark-layer" aria-hidden="true">
+<div id="field">
+  <div id="score">&#9917; FIFA 2026 — Ball Animation Demo</div>
+  <div id="ball"></div>
 
-        <!-- Ball 1: top-left region, small, slow -->
-        <span
-            id="watermark-ball-1"
-            class="watermark-ball"
-            aria-hidden="true"
-            data-ball-index="0"
-            style="
-                font-size: 22px;
-                top: 8%;
-                left: 7%;
-                animation-duration: 22s;
-                animation-delay: -3s;
-                --tx-start: 0px;   --ty-start: 0px;
-                --tx-end:   60px;  --ty-end:  -40px;
-                --rot-end:  270deg;
-                --scale:    0.85;
-                --max-opacity: 0.09;
-            "
-        >⚽</span>
+  <div id="ui">
+    <button class="btn" id="btnPause">Pause</button>
+    <button class="btn" id="btnReset">Reset</button>
+    <button class="btn" id="btnFast">Fast</button>
+    <button class="btn" id="btnSlow">Slow</button>
+  </div>
+</div>
 
-        <!-- Ball 2: top-right region, medium, medium speed -->
-        <span
-            id="watermark-ball-2"
-            class="watermark-ball"
-            aria-hidden="true"
-            data-ball-index="1"
-            style="
-                font-size: 38px;
-                top: 12%;
-                left: 78%;
-                animation-duration: 31s;
-                animation-delay: -11s;
-                --tx-start: 0px;    --ty-start: 0px;
-                --tx-end:  -80px;   --ty-end:   55px;
-                --rot-end:  -360deg;
-                --scale:    1.0;
-                --max-opacity: 0.07;
-            "
-        >⚽</span>
+<script>
+  /**
+   * Configuration constants for ball movement.
+   * All magic numbers are centralised here.
+   */
+  const CONFIG = Object.freeze({
+    BALL_SIZE:          40,
+    INITIAL_VELOCITY_X: 3.2,
+    INITIAL_VELOCITY_Y: 2.4,
+    MIN_VELOCITY:       0.5,
+    MAX_VELOCITY:      10.0,
+    SPEED_STEP:         0.8,
+    DAMPING:            1.0,
+  });
 
-        <!-- Ball 3: centre-left, large, fast -->
-        <span
-            id="watermark-ball-3"
-            class="watermark-ball"
-            aria-hidden="true"
-            data-ball-index="2"
-            style="
-                font-size: 58px;
-                top: 45%;
-                left: 18%;
-                animation-duration: 16s;
-                animation-delay: -7s;
-                --tx-start: 0px;   --ty-start: 0px;
-                --tx-end:  110px;  --ty-end:  -90px;
-                --rot-end:  540deg;
-                --scale:    1.15;
-                --max-opacity: 0.06;
-            "
-        >⚽</span>
+  /**
+   * Mutable animation state — kept in a single object to avoid
+   * polluting the global scope.
+   */
+  const state = {
+    x:      0,
+    y:      0,
+    vx:     CONFIG.INITIAL_VELOCITY_X,
+    vy:     CONFIG.INITIAL_VELOCITY_Y,
+    paused: false,
+    rafId:  null,
+  };
 
-        <!-- Ball 4: centre-right, small, slow -->
-        <span
-            id="watermark-ball-4"
-            class="watermark-ball"
-            aria-hidden="true"
-            data-ball-index="3"
-            style="
-                font-size: 20px;
-                top: 55%;
-                left: 62%;
-                animation-duration: 38s;
-                animation-delay: -19s;
-                --tx-start: 0px;   --ty-start: 0px;
-                --tx-end:  -50px;  --ty-end:   70px;
-                --rot-end:  -180deg;
-                --scale:    0.7;
-                --max-opacity: 0.11;
-            "
-        >⚽</span>
+  /* DOM references */
+  const field    = document.getElementById('field');
+  const ball     = document.getElementById('ball');
+  const btnPause = document.getElementById('btnPause');
+  const btnReset = document.getElementById('btnReset');
+  const btnFast  = document.getElementById('btnFast');
+  const btnSlow  = document.getElementById('btnSlow');
 
-        <!-- Ball 5: bottom-left, medium -->
-        <span
-            id="watermark-ball-5"
-            class="watermark-ball"
-            aria-hidden="true"
-            data-ball-index="4"
-            style="
-                font-size: 44px;
-                top: 80%;
-                left: 33%;
-                animation-duration: 25s;
-                animation-delay: -5s;
-                --tx-start: 0px;   --ty-start: 0px;
-                --tx-end:   75px;  --ty-end:  -120px;
-                --rot-end:  420deg;
-                --scale:    0.95;
-                --max-opacity: 0.08;
-            "
-        >⚽</span>
+  /**
+   * Returns the maximum x/y coordinates the ball centre may occupy
+   * so the ball stays fully inside the field.
+   *
+   * @returns {{ maxX: number, maxY: number }}
+   */
+  function getBounds() {
+    return {
+      maxX: field.clientWidth  - CONFIG.BALL_SIZE,
+      maxY: field.clientHeight - CONFIG.BALL_SIZE,
+    };
+  }
 
-        <!-- Ball 6: bottom-right, small, unique delay -->
-        <span
-            id="watermark-ball-6"
-            class="watermark-ball"
-            aria-hidden="true"
-            data-ball-index="5"
-            style="
-                font-size: 28px;
-                top: 88%;
-                left: 85%;
-                animation-duration: 19s;
-                animation-delay: -14s;
-                --tx-start: 0px;    --ty-start: 0px;
-                --tx-end:  -90px;   --ty-end:  -60px;
-                --rot-end:  -300deg;
-                --scale:    0.8;
-                --max-opacity: 0.10;
-            "
-        >⚽</span>
+  /**
+   * Clamps `value` to the closed interval [min, max].
+   *
+   * @param {number} value
+   * @param {number} min
+   * @param {number} max
+   * @returns {number}
+   */
+  function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+  }
 
-    </div>
+  /**
+   * Computes a perfectly-elastic wall bounce along one axis.
+   * If the position overshoots the boundary the velocity is reversed
+   * and the position is snapped to the boundary edge.
+   *
+   * @param {number} pos - current position (px)
+   * @param {number} vel - current velocity (px/frame)
+   * @param {number} max - maximum allowed position (px)
+   * @returns {{ pos: number, vel: number }}
+   */
+  function bounce(pos, vel, max) {
+    let p = pos;
+    let v = vel * CONFIG.DAMPING;
 
-    <!-- ─── Hero ──────────────────────────────────────────────────────── -->
-    <section id="hero">
-        <h1>FIFA World Cup</h1>
-        <h2>2026 · United · USA · Canada · Mexico</h2>
+    if (p <= 0) {
+      p = 0;
+      v = Math.abs(v);
+    } else if (p >= max) {
+      p = max;
+      v = -Math.abs(v);
+    }
 
-        <div class="hero-badge" role="img" aria-label="Football">⚽</div>
+    return { pos: p, vel: v };
+  }
 
-        <div class="host-countries">
-            <div class="host-flag">🇺🇸 USA</div>
-            <div class="host-flag">🇨🇦 Canada</div>
-            <div class="host-flag">🇲🇽 Mexico</div>
-        </div>
+  /**
+   * Moves the ball element to position (x, y) using CSS left/top so that
+   * the CSS transform property remains exclusively owned by the keyframe
+   * animations (ballPulse and ballSpin), preventing any visual conflict.
+   *
+   * @param {number} x - horizontal position in px
+   * @param {number} y - vertical position in px
+   */
+  function renderBall(x, y) {
+    ball.style.left = x + 'px';
+    ball.style.top  = y + 'px';
+  }
 
-        <button class="cta-btn" onclick="handleExplore()">Explore 2026</button>
-    </section>
+  /**
+   * One animation frame: advance position, apply bounce, render, schedule next.
+   */
+  function tick() {
+    if (state.paused) return;
 
-    <!-- ─── Info Cards ─────────────────────────────────────────────────── -->
-    <section id="info">
-        <h3>Tournament Highlights</h3>
-        <div class="cards">
-            <div class="card">
-                <div class="icon">🏟️</div>
-                <h4>16 Venues</h4>
-                <p>Iconic stadiums spread across three nations hosting the world's greatest footballers.</p>
-            </div>
-            <div class="card">
-                <div class="icon">🌍</div>
-                <h4>48 Teams</h4>
-                <p>A record-breaking expanded format bringing more nations to the biggest stage.</p>
-            </div>
-            <div class="card">
-                <div class="icon">📅</div>
-                <h4>June – July 2026</h4>
-                <p>Over 100 electrifying matches across a full month of world-class football.</p>
-            </div>
-            <div class="card">
-                <div class="icon">🏆</div>
-                <h4>The Trophy</h4>
-                <p>The iconic FIFA World Cup Trophy — the most coveted prize in global sport.</p>
-            </div>
-        </div>
-    </section>
+    const { maxX, maxY } = getBounds();
 
-    <!-- ─── Footer ────────────────────────────────────────────────────── -->
-    <footer>
-        <p>&copy; 2026 <span>FIFA World Cup</span> · All Rights Reserved</p>
-    </footer>
+    state.x += state.vx;
+    state.y += state.vy;
 
-    <!-- ─── Watermark Script ───────────────────────────────────────────── -->
-    <script>
-        'use strict';
+    const bx = bounce(state.x, state.vx, maxX);
+    const by = bounce(state.y, state.vy, maxY);
 
-        /*
-         * WATERMARK FEATURE — README
-         * ==========================
-         * Animated football watermark background for the FIFA 2026 World Cup page.
-         *
-         * Ball count    : 42 total (WATERMARK_CONFIG.BALL_COUNT); 6 are in static HTML,
-         *                 the rest are appended by JS at DOMContentLoaded.
-         * Size range    : 18 px – 72 px  (SIZE_MIN / SIZE_MAX)
-         * Duration range: 14 s  – 40 s   (DURATION_MIN / DURATION_MAX)
-         * Opacity range : 0.05 – 0.13    (OPACITY_MIN / OPACITY_MAX)
-         * Stagger window: 35 s            (STAGGER_WINDOW) — all delays are unique
-         *                                 negative values spread across this window,
-         *                                 ensuring no two balls move in sync.
-         * Iteration     : infinite        — set via CSS .watermark-ball rule
-         *                                 (animation-iteration-count: infinite)
-         * Interaction   : pointer-events: none on both layer and each ball — the
-         *                 watermark NEVER intercepts clicks, scrolls, or keyboard focus.
-         * Z-index       : watermark-layer z-index: 0; all content sections z-index: 1+
-         *                 so the watermark is always behind interactive elements.
-         * Layout shift  : balls use CSS transform (translate + rotate + scale) so they
-         *                 do not affect document flow and cannot cause layout shifts.
-         *
-         * Tweaking parameters — edit WATERMARK_CONFIG below:
-         *   BALL_COUNT      — total floating balls (min 1)
-         *   SIZE_MIN/MAX    — font-size of each ball emoji in px
-         *   DURATION_MIN/MAX— animation cycle length in seconds
-         *   OPACITY_MIN/MAX — max visible opacity (0 = invisible, 1 = opaque)
-         *   DRIFT_X_MAX     — maximum horizontal drift from start position in px
-         *   DRIFT_Y         — { min, max } vertical drift range in px
-         *   ROTATION_MAX    — maximum spin in degrees (0 → 360° = one full turn)
-         *   STAGGER_WINDOW  — seconds across which animation-delay values are spread
-         */
+    state.x  = bx.pos;
+    state.vx = bx.vel;
+    state.y  = by.pos;
+    state.vy = by.vel;
 
-        /* ── Config ─────────────────────────────────────────────────────── */
-        const WATERMARK_CONFIG = Object.freeze({
-            BALL_COUNT:      42,
-            SIZE_MIN:        18,
-            SIZE_MAX:        72,
-            DURATION_MIN:    14,
-            DURATION_MAX:    40,
-            OPACITY_MIN:     0.05,
-            OPACITY_MAX:     0.13,
-            DRIFT_X_MAX:     220,
-            DRIFT_Y:         { min: 80, max: 220 },
-            ROTATION_MAX:    540,
-            STAGGER_WINDOW:  35,
-            /** Number of balls already present as static HTML (skip re-creating them). */
-            STATIC_BALL_COUNT: 6,
-        });
+    renderBall(state.x, state.y);
 
-        /** All symbols are footballs — emoji used as official 2026 World Cup ball reference. */
-        const BALL_SYMBOLS = Object.freeze(['⚽', '⚽', '⚽', '⚽', '⚽']);
+    state.rafId = requestAnimationFrame(tick);
+  }
 
-        /* ── Pure helpers ────────────────────────────────────────────────── */
+  /**
+   * Starts (or restarts) the requestAnimationFrame loop.
+   */
+  function startLoop() {
+    if (state.rafId !== null) {
+      cancelAnimationFrame(state.rafId);
+    }
+    state.rafId = requestAnimationFrame(tick);
+  }
 
-        /**
-         * Returns a random float in [min, max].
-         * @param {number} min
-         * @param {number} max
-         * @returns {number}
-         */
-        function randomBetween(min, max) {
-            if (typeof min !== 'number' || typeof max !== 'number') {
-                throw new TypeError(`randomBetween: arguments must be numbers, got (${typeof min}, ${typeof max})`);
-            }
-            if (min > max) {
-                throw new RangeError(`randomBetween: min (${min}) must be <= max (${max})`);
-            }
-            return Math.random() * (max - min) + min;
-        }
+  /**
+   * Toggles between paused and running states.
+   */
+  function togglePause() {
+    state.paused = !state.paused;
+    btnPause.textContent = state.paused ? 'Resume' : 'Pause';
+    if (!state.paused) {
+      startLoop();
+    }
+  }
 
-        /**
-         * Returns a random integer in [min, max] inclusive.
-         * @param {number} min
-         * @param {number} max
-         * @returns {number}
-         */
-        function randomIntBetween(min, max) {
-            if (typeof min !== 'number' || typeof max !== 'number') {
-                throw new TypeError(`randomIntBetween: arguments must be numbers`);
-            }
-            return Math.floor(randomBetween(min, max + 1));
-        }
+  /**
+   * Resets the ball to its initial position and velocity.
+   */
+  function resetBall() {
+    state.x      = 0;
+    state.y      = 0;
+    state.vx     = CONFIG.INITIAL_VELOCITY_X;
+    state.vy     = CONFIG.INITIAL_VELOCITY_Y;
+    state.paused = false;
+    btnPause.textContent = 'Pause';
+    renderBall(state.x, state.y);
+    startLoop();
+  }
 
-        /**
-         * Picks a random item from a non-empty array.
-         * @template T
-         * @param {readonly T[]} arr
-         * @returns {T}
-         */
-        function pickRandom(arr) {
-            if (!Array.isArray(arr) || arr.length === 0) {
-                throw new Error('pickRandom: argument must be a non-empty array');
-            }
-            return arr[randomIntBetween(0, arr.length - 1)];
-        }
+  /**
+   * Increases the ball speed by SPEED_STEP, clamped to MAX_VELOCITY.
+   */
+  function increasSpeed() {
+    const sign = function(v) { return v >= 0 ? 1 : -1; };
+    state.vx = clamp(Math.abs(state.vx) + CONFIG.SPEED_STEP, CONFIG.MIN_VELOCITY, CONFIG.MAX_VELOCITY) * sign(state.vx);
+    state.vy = clamp(Math.abs(state.vy) + CONFIG.SPEED_STEP, CONFIG.MIN_VELOCITY, CONFIG.MAX_VELOCITY) * sign(state.vy);
+  }
 
-        /**
-         * Computes motion path CSS values for one watermark ball.
-         * Balls are scattered across the full viewport and drift with
-         * random direction, distance, and rotation.
-         *
-         * @param {number} viewportW  Viewport width in px
-         * @param {number} viewportH  Viewport height in px
-         * @returns {{ txStart: string, tyStart: string, txEnd: string, tyEnd: string, rotEnd: string }}
-         */
-        function computeBallMotion(viewportW, viewportH) {
-            if (typeof viewportW !== 'number' || viewportW <= 0) {
-                throw new RangeError(`computeBallMotion: viewportW must be a positive number, got ${viewportW}`);
-            }
-            if (typeof viewportH !== 'number' || viewportH <= 0) {
-                throw new RangeError(`computeBallMotion: viewportH must be a positive number, got ${viewportH}`);
-            }
+  /**
+   * Decreases the ball speed by SPEED_STEP, clamped to MIN_VELOCITY.
+   */
+  function decreaseSpeed() {
+    const sign = function(v) { return v >= 0 ? 1 : -1; };
+    state.vx = clamp(Math.abs(state.vx) - CONFIG.SPEED_STEP, CONFIG.MIN_VELOCITY, CONFIG.MAX_VELOCITY) * sign(state.vx);
+    state.vy = clamp(Math.abs(state.vy) - CONFIG.SPEED_STEP, CONFIG.MIN_VELOCITY, CONFIG.MAX_VELOCITY) * sign(state.vy);
+  }
 
-            const xOrigin = randomBetween(-40, viewportW + 40);
-            const yOrigin = randomBetween(-40, viewportH + 40);
-            const xDrift  = randomBetween(-WATERMARK_CONFIG.DRIFT_X_MAX, WATERMARK_CONFIG.DRIFT_X_MAX);
-            const yDrift  = randomBetween(-WATERMARK_CONFIG.DRIFT_Y.max, WATERMARK_CONFIG.DRIFT_Y.max);
-            const rotSign = Math.random() > 0.5 ? 1 : -1;
-            const rotDeg  = rotSign * randomBetween(60, WATERMARK_CONFIG.ROTATION_MAX);
+  /* Button event listeners */
+  btnPause.addEventListener('click', togglePause);
+  btnReset.addEventListener('click', resetBall);
+  btnFast.addEventListener('click',  increasSpeed);
+  btnSlow.addEventListener('click',  decreaseSpeed);
 
-            return {
-                txStart: `${xOrigin.toFixed(1)}px`,
-                tyStart: `${yOrigin.toFixed(1)}px`,
-                txEnd:   `${(xOrigin + xDrift).toFixed(1)}px`,
-                tyEnd:   `${(yOrigin + yDrift).toFixed(1)}px`,
-                rotEnd:  `${rotDeg.toFixed(1)}deg`,
-            };
-        }
+  /* Keyboard shortcuts */
+  document.addEventListener('keydown', function(e) {
+    switch (e.key) {
+      case ' ':
+        e.preventDefault();
+        togglePause();
+        break;
+      case 'r':
+      case 'R':
+        resetBall();
+        break;
+      case 'ArrowUp':
+        increasSpeed();
+        break;
+      case 'ArrowDown':
+        decreaseSpeed();
+        break;
+      default:
+        break;
+    }
+  });
 
-        /**
-         * Creates a single .watermark-ball DOM element with unique inline styles.
-         * The element receives:
-         *   - a unique id:                watermark-ball-{index}
-         *   - unique top / left position: derived from the index for static placement
-         *   - unique animation-duration:  randomised in [DURATION_MIN, DURATION_MAX]
-         *   - unique animation-delay:     randomised negative value (already in-progress)
-         *   - animation-iteration-count:  inherited from CSS class (infinite)
-         *
-         * @param {{ viewportW: number, viewportH: number, index: number }} opts
-         * @returns {HTMLElement}
-         */
-        function createWatermarkBall({ viewportW, viewportH, index }) {
-            if (typeof index !== 'number' || index < 0) {
-                throw new RangeError(`createWatermarkBall: index must be a non-negative number, got ${index}`);
-            }
+  /* Bootstrap */
+  (function init() {
+    renderBall(state.x, state.y);
+    startLoop();
+  })();
 
-            const cfg     = WATERMARK_CONFIG;
-            const symbol  = pickRandom(BALL_SYMBOLS);
-            const size    = randomBetween(cfg.SIZE_MIN, cfg.SIZE_MAX);
-            const dur     = randomBetween(cfg.DURATION_MIN, cfg.DURATION_MAX);
-            // Use evenly-distributed negative delay to prevent synchronisation
-            const delayFraction = (index % cfg.STAGGER_WINDOW) / cfg.STAGGER_WINDOW;
-            const extraJitter   = randomBetween(0, cfg.STAGGER_WINDOW / cfg.BALL_COUNT);
-            const delay   = -((delayFraction * cfg.STAGGER_WINDOW + extraJitter) % cfg.STAGGER_WINDOW);
-            const opacity = randomBetween(cfg.OPACITY_MIN, cfg.OPACITY_MAX);
-            const scale   = randomBetween(0.6, 1.2);
-            const motion  = computeBallMotion(viewportW, viewportH);
-
-            // Unique top/left based on a grid-spread so positions are well-distributed
-            const cols    = Math.ceil(Math.sqrt(cfg.BALL_COUNT));
-            const row     = Math.floor(index / cols);
-            const col     = index % cols;
-            const topPct  = (row / cols * 100 + randomBetween(-5, 5)).toFixed(1);
-            const leftPct = (col / cols * 100 + randomBetween(-5, 5)).toFixed(1);
-
-            const el = document.createElement('span');
-            el.className          = 'watermark-ball';
-            el.textContent        = symbol;
-            el.id                 = `watermark-ball-${index}`;
-            el.setAttribute('aria-hidden', 'true');
-            el.dataset.ballIndex  = String(index);
-
-            el.style.cssText = [
-                `font-size: ${size.toFixed(1)}px`,
-                `top: ${topPct}%`,
-                `left: ${leftPct}%`,
-                `animation-duration: ${dur.toFixed(2)}s`,
-                `animation-delay: ${delay.toFixed(2)}s`,
-                `--tx-start:    ${motion.txStart}`,
-                `--ty-start:    ${motion.tyStart}`,
-                `--tx-end:      ${motion.txEnd}`,
-                `--ty-end:      ${motion.tyEnd}`,
-                `--rot-end:     ${motion.rotEnd}`,
-                `--scale:       ${scale.toFixed(3)}`,
-                `--max-opacity: ${opacity.toFixed(3)}`,
-            ].join('; ');
-
-            return el;
-        }
-
-        /**
-         * Appends dynamically-created watermark balls to the layer.
-         * Skips the first STATIC_BALL_COUNT indices (already in HTML).
-         *
-         * @param {HTMLElement} layer
-         * @param {number}      totalCount  Target total ball count (static + dynamic)
-         */
-        function populateWatermarkLayer(layer, totalCount) {
-            if (!(layer instanceof HTMLElement)) {
-                throw new TypeError('populateWatermarkLayer: layer must be an HTMLElement');
-            }
-            if (typeof totalCount !== 'number' || totalCount < 1) {
-                throw new RangeError('populateWatermarkLayer: totalCount must be >= 1');
-            }
-
-            const viewportW = window.innerWidth  || document.documentElement.clientWidth  || 1280;
-            const viewportH = window.innerHeight || document.documentElement.clientHeight || 800;
-
-            const startIndex = WATERMARK_CONFIG.STATIC_BALL_COUNT;
-            const fragment   = document.createDocumentFragment();
-
-            for (let i = startIndex; i < totalCount; i++) {
-                try {
-                    const ball = createWatermarkBall({ viewportW, viewportH, index: i });
-                    fragment.appendChild(ball);
-                } catch (ballErr) {
-                    console.warn(`[watermark] Failed to create ball at index ${i}:`, ballErr);
-                }
-            }
-
-            layer.appendChild(fragment);
-        }
-
-        /**
-         * Removes all dynamically-added balls and re-creates them.
-         * Static HTML balls (ids watermark-ball-1…6) are preserved.
-         *
-         * @param {HTMLElement} layer
-         */
-        function refreshWatermarkLayer(layer) {
-            if (!(layer instanceof HTMLElement)) {
-                console.warn('[watermark] refreshWatermarkLayer: invalid layer element');
-                return;
-            }
-
-            // Remove only dynamically-created balls (data-ball-index >= STATIC_BALL_COUNT)
-            const dynamicBalls = layer.querySelectorAll(
-                `.watermark-ball[data-ball-index]`
-            );
-            dynamicBalls.forEach((ball) => {
-                const idx = parseInt(ball.dataset.ballIndex, 10);
-                if (!isNaN(idx) && idx >= WATERMARK_CONFIG.STATIC_BALL_COUNT) {
-                    ball.remove();
-                }
-            });
-
-            try {
-                populateWatermarkLayer(layer, WATERMARK_CONFIG.BALL_COUNT);
-            } catch (err) {
-                console.error('[watermark] Refresh failed:', err);
-            }
-        }
-
-        /* ── Initialise ──────────────────────────────────────────────────── */
-        function initWatermark() {
-            const layer = document.getElementById('watermark-layer');
-            if (!layer) {
-                console.error('[watermark] #watermark-layer element not found in DOM.');
-                return;
-            }
-
-            try {
-                populateWatermarkLayer(layer, WATERMARK_CONFIG.BALL_COUNT);
-            } catch (initErr) {
-                console.error('[watermark] Initialisation failed:', initErr);
-            }
-
-            // Debounced resize handler — re-positions dynamic balls for the new viewport
-            let resizeTimer = null;
-            window.addEventListener('resize', () => {
-                clearTimeout(resizeTimer);
-                resizeTimer = setTimeout(() => {
-                    try {
-                        refreshWatermarkLayer(layer);
-                    } catch (resizeErr) {
-                        console.warn('[watermark] Resize refresh failed:', resizeErr);
-                    }
-                }, 300);
-            });
-        }
-
-        /* ── CTA handler ─────────────────────────────────────────────────── */
-        function handleExplore() {
-            try {
-                const infoSection = document.getElementById('info');
-                if (!infoSection) {
-                    throw new Error('Info section element not found in DOM');
-                }
-                infoSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            } catch (err) {
-                console.error('[handleExplore]', err);
-            }
-        }
-
-        /* ── Boot ────────────────────────────────────────────────────────── */
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initWatermark);
-        } else {
-            initWatermark();
-        }
-
-        /* ── Exports for unit testing ────────────────────────────────────── */
-        try {
-            if (typeof module !== 'undefined' && module.exports) {
-                module.exports = {
-                    randomBetween,
-                    randomIntBetween,
-                    pickRandom,
-                    computeBallMotion,
-                    createWatermarkBall,
-                    populateWatermarkLayer,
-                    refreshWatermarkLayer,
-                    WATERMARK_CONFIG,
-                };
-            } else {
-                window.__FIFA2026__ = {
-                    randomBetween,
-                    randomIntBetween,
-                    pickRandom,
-                    computeBallMotion,
-                    createWatermarkBall,
-                    populateWatermarkLayer,
-                    refreshWatermarkLayer,
-                    WATERMARK_CONFIG,
-                };
-            }
-        } catch (_exportErr) {
-            /* Silently ignore export errors in restricted environments */
-        }
-    </script>
+  /* Exported for unit testing */
+  window.__fifa2026__ = {
+    CONFIG,
+    state,
+    bounce,
+    clamp,
+    getBounds,
+    togglePause,
+    resetBall,
+    increasSpeed,
+    decreaseSpeed,
+  };
+</script>
 </body>
 </html>

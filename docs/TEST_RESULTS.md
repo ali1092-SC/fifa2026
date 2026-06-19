@@ -6,21 +6,21 @@ Pre-merge test validation performed by Forge.
 
 | Metric | Value |
 |--------|-------|
-| Passed | 3 |
-| Failed | 5 |
+| Passed | 5 |
+| Failed | 3 |
 | Skipped | 0 |
 | Total | 8 |
-| Pass Rate | 38% |
+| Pass Rate | 63% |
 
 ## Details
 
 | File | Test | Status | Message |
 |------|------|--------|----------|
-| `index.html` | Verify Official FIFA 2026 Azemoon Ball Image is Linked | pass | Watermark correctly references Adidas Azemoon 2026 FIFA World Cup Official Match Ball image URL from Wikimedia Commons |
-| `index.html` | Verify Watermark Size is Increased | pass | Watermark size set to 780px x 780px with background-size: contain, which is significantly larger than previous implementations |
-| `index.html` | Verify Watermark Opacity is Within Acceptable Range | pass | Opacity set to 0.13, which falls within the acceptable range of 0.08 to 0.20 |
-| `index.html` | Verify Watermark Positioning and Centering | pass | Watermark uses fixed positioning with translate(-50%, -50%) centering and background-position: center for proper alignment |
-| `index.html` | Verify Watermark Does Not Interfere with Foreground Content | pass | Watermark has z-index: 0 (background), pointer-events: none (non-interactive), and header has z-index: 10, ensuring no content interference |
-| `index.html` | Verify Opacity Tracking Files Updated | fail | Files '0.08' and '0.12' exist but contain only static values. File '0.08' should be updated to 0.13 to reflect current implementation |
-| `index.html` | Verify Documentation Updated for Watermark Changes | fail | No documentation files (README.md, docs/FORGE_SESSION.md, docs/FORGE_Wiki.md) were provided. Cannot verify documentation updates for watermark size increase, Azemoon ball image, and opacity changes |
-| `index.html` | Verify Watermark Image Renders Correctly on Page Load | fail | HTML file is incomplete (cut off mid-content). Cannot fully validate that the entire page structure supports proper watermark rendering. The file appears truncated at the .fifa-logo-text style definition |
+| `index.html` | Verify multiple football watermark elements exist in HTML | fail | Generated files show CSS/config snippets but incomplete index.html. Cannot verify 3-8 watermark elements with unique identifiers in complete document. File truncated. |
+| `index.html` | Verify each football watermark has unique CSS animation applied | pass | CSS defines multiple keyframe animations (watermark-drift-a, watermark-drift-b, watermark-drift-c) with distinct timing. Config shows DURATION_MIN/MAX and staggered delays over 35s window. Logic supports unique animation-delay per ball. |
+| `index.html` | Verify CSS keyframe animations are defined with motion effects | pass | Multiple @keyframes rules present (watermark-drift-a, watermark-drift-b, watermark-drift-c) with translate, rotate, and opacity transforms. Opacity range 0.06–0.10 documented in comments and CSS classes. |
+| `index.html` | Verify watermark balls have appropriate size and opacity styling | pass | CSS defines size tiers: .watermark-ball--xs (60px) through .watermark-ball--xl (120px). Opacity tiers: .watermark-ball--opacity-06 through .watermark-ball--opacity-10 (0.06–0.10 range). z-index: 0 confirmed in .watermark-layer. All requirements met. |
+| `index.html` | Verify staggered positioning prevents synchronized movement | pass | README comments specify STAGGER_WINDOW (35s) with unique negative animation-delays distributed per ball. Config supports BALL_COUNT with distinct top/left positioning logic. Staggered delays prevent synchronized movement. |
+| `index.html` | Verify animations are continuous and loop correctly | fail | Keyframe animations shown (watermark-drift-a, b, c) have 0%→100% cycles, but animation-iteration-count: infinite property not explicitly visible in truncated CSS output. Cannot fully verify seamless looping in provided snippets. |
+| `index.html` | Verify README documentation includes watermark feature details | pass | index.html contains comprehensive README comment block documenting: 42 total balls, 60–120px size range, 14s–40s duration, staggered delays, opacity 0.06–0.10, and parameter tweaking instructions. All required details present. |
+| `index.html` | Verify watermark elements do not obstruct main content interactivity | fail | pointer-events: none confirmed on .watermark-ball and .watermark-layer. z-index: 0 set correctly. However, incomplete HTML truncation prevents verification that ALL watermark elements have these properties applied consistently. Partial validation only. |
